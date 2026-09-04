@@ -3,6 +3,18 @@ export interface ProductFilament {
   weight: number;
 }
 
+export interface ProductPart {
+  id: string;
+  name: string;
+  weight: number; // in grams
+  printTime: number; // in hours
+  materialId: string;
+  colorMode?: 'MONO' | 'MULTI';
+  filaments?: ProductFilament[];
+  quantity: number; // Quantidade de peças necessárias dessa parte para compor 1 produto
+  unitsPerPrint?: number; // Duplicidade da peça na mesa (quantas são impressas por vez)
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -12,6 +24,8 @@ export interface Product {
   materialId: string;
   colorMode?: 'MONO' | 'MULTI';
   filaments?: ProductFilament[];
+  isMultipart?: boolean;
+  parts?: ProductPart[];
   accessoryCost?: number; // Optional accessory cost
   costPrice: number; // calculated cost
   b2bPrice?: number; // calculated B2B price
@@ -30,6 +44,7 @@ export interface InventoryItem {
   costPrice: number;
   totalValue: number; // stock * costPrice
   status: 'NORMAL' | 'BAIXO' | 'CRITICO';
+  partsStock?: Record<string, number>;
 }
 
 export interface Seller {
@@ -136,6 +151,8 @@ export interface PrintJob {
   normalizedFileName: string;
   productId: string | null;
   productName: string | null;
+  partId?: string | null;
+  partName?: string | null;
   status: 'PRINTING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED' | 'ERROR';
   startedAt: string;
   completedAt: string | null;

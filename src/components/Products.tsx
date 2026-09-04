@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useDb } from '../context/DbContext';
 import { Trash2, X, Plus, Edit, Image as ImageIcon, Upload } from 'lucide-react';
 import { ProductFilament, Product } from '../types';
+import { MultipartProductModal } from './MultipartProductModal';
 
 const DEFAULT_IMAGES = [
   "https://upload.wikimedia.org/wikipedia/commons/7/7b/3DBenchy_created_using_color_mixing_on_an_FDM_printer.jpg", // 3D Benchy
@@ -15,7 +16,9 @@ export const Products: React.FC = () => {
 
   // Form states
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMultipartModalOpen, setIsMultipartModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingMultipartProduct, setEditingMultipartProduct] = useState<Product | null>(null);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Instrumento');
   const [printHours, setPrintHours] = useState(5);
@@ -121,6 +124,12 @@ export const Products: React.FC = () => {
   };
 
   const handleEdit = (p: Product) => {
+    if (p.isMultipart) {
+      setEditingMultipartProduct(p);
+      setIsMultipartModalOpen(true);
+      return;
+    }
+    
     setEditingId(p.id);
     setName(p.name);
     setCategory(p.category);
@@ -209,12 +218,23 @@ export const Products: React.FC = () => {
           <h2 className="font-headline-md text-white">Catálogo de Produtos</h2>
           <p className="text-sm text-slate-400 mt-1">Gerencie seu portfólio de impressões 3D</p>
         </div>
-        <button
-          onClick={handleOpenAddModal}
-          className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> Novo Produto
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpenAddModal}
+            className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Novo Produto
+          </button>
+          <button
+            onClick={() => {
+              setEditingMultipartProduct(null);
+              setIsMultipartModalOpen(true);
+            }}
+            className="bg-[#6B46C1] hover:bg-[#553C9A] text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Novo Produto Multpartes
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -587,6 +607,15 @@ export const Products: React.FC = () => {
           </div>
         </div>
       )}
+
+      <MultipartProductModal 
+        isOpen={isMultipartModalOpen} 
+        onClose={() => {
+          setIsMultipartModalOpen(false);
+          setEditingMultipartProduct(null);
+        }}
+        editingProduct={editingMultipartProduct}
+      />
     </div>
   );
 };

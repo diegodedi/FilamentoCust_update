@@ -61,6 +61,7 @@ interface DbContextType {
   
   // Inventory API
   registerMovement: (productId: string, type: 'IN' | 'OUT', qty: number) => boolean;
+  registerPartMovement: (productId: string, partId: string, type: 'IN' | 'OUT', qty: number) => boolean;
   updateInventoryItem: (id: string, item: InventoryItem) => void;
   deleteInventoryItem: (id: string) => void;
   
@@ -375,6 +376,70 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
         return {
           ...item,
           stock: newStock,
+          totalValue: newStock * item.costPrice,
+          status: getStockStatus(newStock, item.minStock)
+        };
+      }
+      return item;
+    });
+
+    if (success) {
+      setInventory(updated);
+      saveToLocalStorage('forge_inventory', updated);
+      commitToGasIfEnabled({ inventory: updated });
+    }
+    return success;
+  };
+
+  const registerPartMovement = (productId: string, partId: string, type: 'IN' | 'OUT', qty: number): boolean => {
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.isMultipart || !product.parts) return false;
+
+    let success = true;
+    const updated = inventory.map(item => {
+      if (item.id === productId) {
+        let newStock = item.stock;
+        const partsStock = { ...(item.partsStock || {}) };
+        const currentPartStock = partsStock[partId] || 0;
+
+        if (type === 'IN') {
+          partsStock[partId] = currentPartStock + qty;
+        } else {
+          if (currentPartStock >= qty) {
+            partsStock[partId] = currentPartStock - qty;
+          } else {
+            success = false;
+            return item;
+          }
+        }
+
+        let completeAssemblies = 0;
+        if (type === 'IN') {
+          let maxPossible = Infinity;
+          for (const p of product.parts) {
+            const stock = partsStock[p.id] || 0;
+            const required = p.quantity || 1;
+            const possible = Math.floor(stock / required);
+            if (possible < maxPossible) maxPossible = possible;
+          }
+
+          if (maxPossible > 0 && maxPossible !== Infinity) {
+            completeAssemblies = maxPossible;
+            for (const p of product.parts) {
+              const required = p.quantity || 1;
+              partsStock[p.id] -= required * completeAssemblies;
+            }
+          }
+        }
+
+        if (completeAssemblies > 0) {
+          newStock += completeAssemblies;
+        }
+
+        return {
+          ...item,
+          stock: newStock,
+          partsStock,
           totalValue: newStock * item.costPrice,
           status: getStockStatus(newStock, item.minStock)
         };

@@ -134,25 +134,69 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
         // New job detected
         const normName = normalizeName(state.filename);
-        const matchedProduct = productsRef.current.find(p => {
-          if (!normName) return false;
+        let matchedProduct = null;
+        let matchedPart = null;
+
+        for (const p of productsRef.current) {
+          if (!normName) continue;
           const normProduct = normalizeName(p.name);
-          if (!normProduct) return false;
-          
-          // 1. Exact match
-          if (normName === normProduct) return true;
-          // 2. Contains match: if the filename contains the product name (e.g., PLA_Vortex_Case_MkII.gcode)
-          if (normName.includes(normProduct)) return true;
-          // 3. Contains match reversed: if the product name contains the filename
-          if (normProduct.includes(normName)) return true;
-          return false;
-        });
+          if (normProduct) {
+            // 1. Exact match
+            if (normName === normProduct) {
+              matchedProduct = p;
+              break;
+            }
+            // 2. Contains match
+            if (normName.includes(normProduct)) {
+              matchedProduct = p;
+              break;
+            }
+            // 3. Contains match reversed
+            if (normProduct.includes(normName)) {
+              matchedProduct = p;
+              break;
+            }
+          }
+        }
+
+        if (!matchedProduct) {
+          // Check parts
+          for (const p of productsRef.current) {
+            if (p.isMultipart && p.parts) {
+              for (const pt of p.parts) {
+                const normPart = normalizeName(pt.name);
+                if (normPart) {
+                  if (normName === normPart || normName.includes(normPart) || normPart.includes(normName)) {
+                    matchedProduct = p;
+                    matchedPart = pt;
+                    break;
+                  }
+                }
+              }
+              if (matchedPart) break;
+            }
+          }
+        }
         
         let filamentConsumption: any[] = [];
-        if (matchedProduct && matchedProduct.filaments) {
+        if (matchedPart && matchedPart.filaments) {
+          filamentConsumption = matchedPart.filaments.map(f => ({
+            materialId: f.materialId,
+            materialName: 'Material ' + f.materialId,
+            plannedWeight: f.weight,
+            consumedWeight: 0
+          }));
+        } else if (matchedPart && matchedPart.materialId) {
+          filamentConsumption = [{
+            materialId: matchedPart.materialId,
+            materialName: 'Material',
+            plannedWeight: matchedPart.weight,
+            consumedWeight: 0
+          }];
+        } else if (matchedProduct && matchedProduct.filaments) {
           filamentConsumption = matchedProduct.filaments.map(f => ({
             materialId: f.materialId,
-            materialName: 'Material ' + f.materialId, // Ideally look up name
+            materialName: 'Material ' + f.materialId,
             plannedWeight: f.weight,
             consumedWeight: 0
           }));
@@ -172,12 +216,14 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
           normalizedFileName: normName,
           productId: matchedProduct ? matchedProduct.id : null,
           productName: matchedProduct ? matchedProduct.name : null,
+          partId: matchedPart ? matchedPart.id : null,
+          partName: matchedPart ? matchedPart.name : null,
           status: state.status,
           startedAt: new Date().toISOString(),
           completedAt: null,
           duration: 0,
           progress: state.progress,
-          quantityProduced: state.plateQuantity || (matchedProduct ? matchedProduct.unitsPerPrint || 1 : 1),
+          quantityProduced: state.plateQuantity || (matchedPart ? matchedPart.unitsPerPrint || 1 : (matchedProduct ? matchedProduct.unitsPerPrint || 1 : 1)),
           filamentConsumption,
           inventoryApplied: false
         });
@@ -246,8 +292,12 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
            });
 
            if (job.productId) {
-             // Add finished products to inventory
-             registerMovement(job.productId, 'IN', producedQty);
+             // Add finished products/parts to inventory
+             if (job.partId) {
+               registerPartMovement(job.productId, job.partId, 'IN', producedQty);
+             } else {
+               registerMovement(job.productId, 'IN', producedQty);
+             }
              
              // Deduct actual filament weight
              const actualWeightTotal = state.filamentWeight || 0;
