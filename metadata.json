@@ -1,0 +1,6 @@
+{
+  "name": "Filamento Cust",
+  "description": "Sistema completo de ERP SaaS para gestão operacional, estoque, materiais, custos e finanças de empresas de impressão 3D, integrado com Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
