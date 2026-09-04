@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Brand visual overrides */
+  --color-primary-container: #1E293B; /* Dark Slate Blue for sidebar */
+}
+
+/* Custom visual helper classes */
+.font-headline-lg {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem;
+  letter-spacing: -0.02em;
+}
+
+.font-headline-md {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem;
+  letter-spacing: -0.015em;
+}
+
+.font-headline-sm {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+.font-body-md {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem;
+}
+
+.font-label-md {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem;
+}
+
+.bg-slate-850 {
+  background-color: #1a2333;
+}
+
+
+body {
+  background-color: #121418;
+  color: #f1f5f9;
+}
+
+/* Fix for Electron text selection and input focus issues */
+input, textarea, select {
+  -webkit-app-region: no-drag !important;
+  -webkit-user-select: auto !important;
+  user-select: auto !important;
+}
