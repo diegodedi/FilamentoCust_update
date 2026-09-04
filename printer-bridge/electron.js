@@ -67,7 +67,7 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
       try {
-        autoUpdater.checkForUpdatesAndNotify();
+        checkUpdates();
       } catch (err) {}
     }
   });
@@ -81,7 +81,7 @@ if (!gotTheLock) {
     
     // Inicia verificação de atualizações no GitHub
     try {
-      autoUpdater.checkForUpdatesAndNotify();
+      checkUpdates();
     } catch (err) {
       console.error('Erro ao iniciar verificação de atualizações:', err);
     }
@@ -119,7 +119,7 @@ if (!gotTheLock) {
         mainWindow.show();
         mainWindow.focus();
         try {
-          autoUpdater.checkForUpdatesAndNotify();
+          checkUpdates();
         } catch (err) {}
       }
     });
@@ -136,7 +136,24 @@ if (!gotTheLock) {
     // pois ele deve continuar no System Tray
   });
 
+  // Função helper para verificar atualizações apenas se estiver em produção
+  function checkUpdates() {
+    if (app.isPackaged) {
+      try {
+        autoUpdater.checkForUpdatesAndNotify();
+      } catch (err) {
+        console.error('Erro ao chamar checkForUpdatesAndNotify:', err);
+      }
+    } else {
+      console.log('Modo de desenvolvimento: Pulando verificação de atualizações.');
+    }
+  }
+
   // Eventos de atualização
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Verificando atualizações...');
+  });
+
   autoUpdater.on('update-available', (info) => {
     console.log('Atualização encontrada:', info.version);
     dialog.showMessageBox({
@@ -145,6 +162,10 @@ if (!gotTheLock) {
       message: `Uma nova versão (${info.version}) foi encontrada!`,
       detail: 'O download está sendo feito em segundo plano. Você será notificado quando estiver pronto para instalar.'
     });
+  });
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('Nenhuma atualização disponível no momento.');
   });
 
   autoUpdater.on('update-downloaded', (info) => {
@@ -165,6 +186,11 @@ if (!gotTheLock) {
 
   autoUpdater.on('error', (message) => {
     console.error('Houve um erro ao atualizar o aplicativo:', message);
+    // Só exibe popup de erro se não for erro de rede genérico, para não irritar o usuário
+    if (message.message && message.message.includes('net::ERR_INTERNET_DISCONNECTED')) {
+      console.log('Sem internet para buscar atualizações.');
+      return;
+    }
     dialog.showErrorBox('Erro na atualização', message == null ? 'unknown' : (message.stack || message).toString());
   });
 
