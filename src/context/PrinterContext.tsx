@@ -223,7 +223,7 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
           completedAt: null,
           duration: 0,
           progress: state.progress,
-          quantityProduced: state.plateQuantity || (matchedPart ? matchedPart.unitsPerPrint || 1 : (matchedProduct ? matchedProduct.unitsPerPrint || 1 : 1)),
+          quantityProduced: state.plateQuantity || (matchedProduct ? matchedProduct.unitsPerPrint || 1 : 1),
           filamentConsumption,
           inventoryApplied: false
         });

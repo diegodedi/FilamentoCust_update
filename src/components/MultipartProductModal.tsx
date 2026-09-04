@@ -46,7 +46,6 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
     id: 'part-' + Date.now() + Math.random(),
     name: '',
     quantity: 1,
-    unitsPerPrint: 1,
     weight: 30,
     printTime: 1, // 1 hour
     materialId: materials[0]?.id || '',
@@ -121,22 +120,22 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
       }
     }
 
+    // Perform calculations on every render so the UI stays up-to-date
     let totalWeight = 0;
     let totalTime = 0;
-    let totalCost = accessoryCost;
+    let currentCost = accessoryCost || 0;
 
     parts.forEach(p => {
-      // Each part is required `p.quantity` times to make 1 product
       const qty = p.quantity || 1;
       const weightPerPart = p.colorMode === 'MONO' ? p.weight : (p.filaments?.reduce((sum, f) => sum + f.weight, 0) || 0);
       
       totalWeight += weightPerPart * qty;
       totalTime += (p.printTime || 0) * qty;
-      totalCost += calculatePartCost(p) * qty;
+      currentCost += calculatePartCost(p) * qty;
     });
 
-    const b2b = totalCost * 4;
-    const b2c = b2b * 2;
+    const currentB2B = currentCost * 4;
+    const currentB2C = currentB2B * 2;
 
     const data: Omit<Product, 'id'> = {
       name,
@@ -147,10 +146,10 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
       unitsPerPrint: 1, // Full product is assembled as 1
       colorMode: 'MULTI',
       filaments: [], // We rely on parts now
-      costPrice: parseFloat(totalCost.toFixed(2)),
-      b2bPrice: parseFloat(b2b.toFixed(2)),
-      sellPrice: parseFloat(b2c.toFixed(2)),
-      profit: parseFloat((b2c - totalCost).toFixed(2)),
+      costPrice: parseFloat(currentCost.toFixed(2)),
+      b2bPrice: parseFloat(currentB2B.toFixed(2)),
+      sellPrice: parseFloat(currentB2C.toFixed(2)),
+      profit: parseFloat((currentB2C - currentCost).toFixed(2)),
       materialId: parts[0]?.materialId || '',
       image,
       isMultipart: true,
@@ -164,6 +163,15 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
     }
     onClose();
   };
+
+  // Perform calculations for UI rendering
+  let currentCost = accessoryCost || 0;
+  parts.forEach(p => {
+    const qty = p.quantity || 1;
+    currentCost += calculatePartCost(p) * qty;
+  });
+  const currentB2B = currentCost * 4;
+  const currentB2C = currentB2B * 2;
 
   if (!isOpen) return null;
 
@@ -312,7 +320,7 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                         placeholder="Ex: base_v1.gcode"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       <div>
                         <label className="block text-xs text-slate-400 mb-1" title="Quantas destas partes formam 1 produto completo">Qtd p/ Produto</label>
                         <input
@@ -321,17 +329,6 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                           required
                           value={part.quantity}
                           onChange={e => updatePart(part.id, { quantity: parseInt(e.target.value) || 1 })}
-                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-1.5 text-white text-sm focus:border-[#0084FF] outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-slate-400 mb-1" title="Quantas partes são impressas de uma vez na mesa">Duplicidade na mesa</label>
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={part.unitsPerPrint || 1}
-                          onChange={e => updatePart(part.id, { unitsPerPrint: parseInt(e.target.value) || 1 })}
                           className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-1.5 text-white text-sm focus:border-[#0084FF] outline-none"
                         />
                       </div>
@@ -347,7 +344,7 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                             type="number"
                             min="0"
                             value={Math.floor(part.printTime)}
-                            onChange={e => updatePart(part.id, { printTime: parseInt(e.target.value) + ((part.printTime % 1)) })}
+                            onChange={e => updatePart(part.id, { printTime: parseInt(e.target.value || '0') + ((part.printTime % 1)) })}
                             className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-1.5 text-white text-sm focus:border-[#0084FF] outline-none"
                             placeholder="Horas"
                           />
@@ -359,7 +356,7 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                             min="0"
                             max="59"
                             value={Math.round((part.printTime % 1) * 60)}
-                            onChange={e => updatePart(part.id, { printTime: Math.floor(part.printTime) + (parseInt(e.target.value) / 60) })}
+                            onChange={e => updatePart(part.id, { printTime: Math.floor(part.printTime) + (parseInt(e.target.value || '0') / 60) })}
                             className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-1.5 text-white text-sm focus:border-[#0084FF] outline-none"
                             placeholder="Min"
                           />
@@ -400,17 +397,44 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
             </div>
           </div>
 
+          <div className="border border-[#2563EB]/20 bg-[#0084FF]/5 p-5 rounded-xl">
+            <h3 className="text-xs font-bold text-[#0084FF] uppercase mb-4 tracking-wider">Cálculos Finais</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 uppercase block">Custo de Produção</label>
+                <div className="text-lg text-white font-bold font-mono">
+                  R$ {currentCost.toFixed(2)}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 uppercase block">Venda B2B (Lojistas)</label>
+                <div className="text-lg text-[#0084FF] font-bold font-mono">
+                  R$ {currentB2B.toFixed(2)}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 uppercase block">Venda B2C (Cliente Final)</label>
+                <div className="text-lg text-[#22C55E] font-bold font-mono">
+                  R$ {currentB2C.toFixed(2)}
+                </div>
+              </div>
+            </div>
+            <div className="text-[10px] text-slate-400 font-mono mt-4 pt-3 border-t border-[#2563EB]/10">
+              Custo = Filamento(s) + (Tempo de Impressão × 0,01) + Acessório
+            </div>
+          </div>
+
           <div className="pt-6 border-t border-[#2B2F36] flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-[#2B2F36] transition-colors"
+              className="bg-[#1C1F24] border border-[#2B2F36] text-slate-300 hover:bg-[#121418] font-bold py-2.5 px-6 rounded-lg text-sm transition-colors shadow-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg text-sm font-bold bg-[#0084FF] hover:bg-[#0084FF]/90 text-white transition-colors shadow-lg shadow-[#0084FF]/20"
+              className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-8 rounded-lg text-sm transition-colors shadow-sm"
             >
               Salvar Produto
             </button>

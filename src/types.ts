@@ -12,7 +12,6 @@ export interface ProductPart {
   colorMode?: 'MONO' | 'MULTI';
   filaments?: ProductFilament[];
   quantity: number; // Quantidade de peças necessárias dessa parte para compor 1 produto
-  unitsPerPrint?: number; // Duplicidade da peça na mesa (quantas são impressas por vez)
 }
 
 export interface Product {
