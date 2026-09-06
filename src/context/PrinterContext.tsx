@@ -209,57 +209,63 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }];
         }
 
-        const newJobDbId = addPrintJob({
-          printerId: printer.id,
-          printerName: printer.name,
-          fileName: state.filename,
-          normalizedFileName: normName,
-          productId: matchedProduct ? matchedProduct.id : null,
-          productName: matchedProduct ? matchedProduct.name : null,
-          partId: matchedPart ? matchedPart.id : null,
-          partName: matchedPart ? matchedPart.name : null,
-          status: state.status,
-          startedAt: new Date().toISOString(),
-          completedAt: null,
-          duration: 0,
-          progress: state.progress,
-          quantityProduced: state.plateQuantity || (matchedProduct ? matchedProduct.unitsPerPrint || 1 : 1),
-          filamentConsumption,
-          inventoryApplied: false
-        });
+        let newJobDbId = null;
+
+        if (matchedProduct) {
+          newJobDbId = addPrintJob({
+            printerId: printer.id,
+            printerName: printer.name,
+            fileName: state.filename,
+            normalizedFileName: normName,
+            productId: matchedProduct.id,
+            productName: matchedProduct.name,
+            partId: matchedPart ? matchedPart.id : null,
+            partName: matchedPart ? matchedPart.name : null,
+            status: state.status,
+            startedAt: new Date().toISOString(),
+            completedAt: null,
+            duration: 0,
+            progress: state.progress,
+            quantityProduced: state.plateQuantity || matchedProduct.unitsPerPrint || 1,
+            filamentConsumption,
+            inventoryApplied: false
+          });
+        }
 
         activeJobsRef.current[printerId] = { 
           jobDbId: newJobDbId, 
           matchedProductId: matchedProduct ? matchedProduct.id : null 
         };
       } else if (currentTrackedJob) {
-        // Update progress
-        const updates: any = {
-          progress: state.progress,
-          duration: state.timeElapsed,
-          status: state.status
-        };
+        if (currentTrackedJob.jobDbId) {
+          // Update progress
+          const updates: any = {
+            progress: state.progress,
+            duration: state.timeElapsed,
+            status: state.status
+          };
 
-        // Update filament consumption in real time during the print
-        const job = printJobsRef.current.find(j => j.id === currentTrackedJob.jobDbId);
-        if (job && state.filamentWeight !== undefined) {
-           const actualWeightTotal = state.filamentWeight || 0;
-           const plannedWeightTotal = job.filamentConsumption.reduce((sum, f) => sum + (f.plannedWeight || 0), 0);
-           
-           updates.filamentConsumption = job.filamentConsumption.map(f => {
-               let consumed = actualWeightTotal > 0 ? 0 : f.consumedWeight;
-               if (actualWeightTotal > 0 && plannedWeightTotal > 0) {
-                 consumed = (f.plannedWeight / plannedWeightTotal) * actualWeightTotal;
-               } else if (actualWeightTotal >= 0 && job.filamentConsumption.length === 1) {
-                 consumed = actualWeightTotal;
-               }
-               
-               // Ensure consumedWeight is properly set so the UI can display it over planned
-               return { ...f, consumedWeight: consumed };
-           });
+          // Update filament consumption in real time during the print
+          const job = printJobsRef.current.find(j => j.id === currentTrackedJob.jobDbId);
+          if (job && state.filamentWeight !== undefined) {
+             const actualWeightTotal = state.filamentWeight || 0;
+             const plannedWeightTotal = job.filamentConsumption.reduce((sum, f) => sum + (f.plannedWeight || 0), 0);
+             
+             updates.filamentConsumption = job.filamentConsumption.map(f => {
+                 let consumed = actualWeightTotal > 0 ? 0 : f.consumedWeight;
+                 if (actualWeightTotal > 0 && plannedWeightTotal > 0) {
+                   consumed = (f.plannedWeight / plannedWeightTotal) * actualWeightTotal;
+                 } else if (actualWeightTotal >= 0 && job.filamentConsumption.length === 1) {
+                   consumed = actualWeightTotal;
+                 }
+                 
+                 // Ensure consumedWeight is properly set so the UI can display it over planned
+                 return { ...f, consumedWeight: consumed };
+             });
+          }
+
+          updatePrintJob(currentTrackedJob.jobDbId, updates);
         }
-
-        updatePrintJob(currentTrackedJob.jobDbId, updates);
       }
     } else if (state.status === 'COMPLETED') {
       let jobDbId = currentTrackedJob?.jobDbId;

@@ -5,7 +5,7 @@ import { usePrinters } from '../context/PrinterContext';
 import { Printer, Server, Activity, Box, Play, CheckCircle2, AlertCircle, Clock, Battery, ServerCrash, Plus, X, Terminal } from 'lucide-react';
 import { PrintJob } from '../types';
 export const Production: React.FC = () => {
-  const { printers, printJobs, addPrinter } = useDb();
+  const { printers, printJobs, addPrinter, products } = useDb();
   const { activeStates, bridgeOnline, checkBridgeStatus } = usePrinters();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -78,7 +78,7 @@ export const Production: React.FC = () => {
   };
 
   const sortedJobs = printJobs
-    .filter(job => job.productId)
+    .filter(job => job.productId && products.some(p => p.id === job.productId))
     .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
 
   const formatTime = (seconds: number) => {
