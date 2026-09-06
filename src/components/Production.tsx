@@ -77,11 +77,9 @@ export const Production: React.FC = () => {
     setTestLog([]);
   };
 
-  // Reverse sort print jobs by startedAt
-
-  const sortedJobs = [...printJobs].sort((a, b) => 
-    new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
-  );
+  const sortedJobs = printJobs
+    .filter(job => job.productId)
+    .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
 
   const formatTime = (seconds: number) => {
     if (!seconds || isNaN(seconds)) return '00:00:00';
