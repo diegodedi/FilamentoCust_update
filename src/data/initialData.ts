@@ -11,7 +11,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 75.00,
     unitPrice: 1.50,
     purchaseDate: "2026-08-15",
-    image: "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/cardboard_box_1788481782406.jpg"
+    image: ""
   },
   {
     id: "sup-02",
@@ -23,7 +23,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 45.00,
     unitPrice: 0.45,
     purchaseDate: "2026-08-20",
-    image: "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/bubble_wrap_1788481800877.jpg"
+    image: ""
   },
   {
     id: "sup-03",
@@ -35,7 +35,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 35.00,
     unitPrice: 3.50,
     purchaseDate: "2026-09-01",
-    image: "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/adhesive_tape_1788481810511.jpg"
+    image: ""
   }
 ];
 

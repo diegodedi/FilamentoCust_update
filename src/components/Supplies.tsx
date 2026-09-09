@@ -54,9 +54,9 @@ export const Supplies: React.FC = () => {
 
   const getPresetImage = (type: string) => {
     switch (type) {
-      case 'Caixa de papelão': return "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/cardboard_box_1788481782406.jpg";
-      case 'Plástico bolha': return "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/bubble_wrap_1788481800877.jpg";
-      case 'Fita adesiva': return "file:///C:/Users/diego/.gemini/antigravity-ide/brain/a00f9dfd-34a3-4e43-932e-56ff9cba565a/adhesive_tape_1788481810511.jpg";
+      case 'Caixa de papelão': return "";
+      case 'Plástico bolha': return "";
+      case 'Fita adesiva': return "";
       default: return "";
     }
   };

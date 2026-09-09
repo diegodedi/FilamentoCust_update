@@ -41,7 +41,7 @@ if (!gotTheLock) {
       }
     });
 
-    const isDev = process.env.NODE_ENV === 'development';
+    const isDev = !app.isPackaged;
 
     if (isDev) {
       win.loadURL('http://localhost:3000');

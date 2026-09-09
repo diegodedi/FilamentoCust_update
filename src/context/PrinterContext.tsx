@@ -179,34 +179,38 @@ export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
         
         let filamentConsumption: any[] = [];
-        if (matchedPart && matchedPart.filaments) {
-          filamentConsumption = matchedPart.filaments.map(f => ({
-            materialId: f.materialId,
-            materialName: 'Material ' + f.materialId,
-            plannedWeight: f.weight,
-            consumedWeight: 0
-          }));
-        } else if (matchedPart && matchedPart.materialId) {
-          filamentConsumption = [{
-            materialId: matchedPart.materialId,
-            materialName: 'Material',
-            plannedWeight: matchedPart.weight,
-            consumedWeight: 0
-          }];
-        } else if (matchedProduct && matchedProduct.filaments) {
-          filamentConsumption = matchedProduct.filaments.map(f => ({
-            materialId: f.materialId,
-            materialName: 'Material ' + f.materialId,
-            plannedWeight: f.weight,
-            consumedWeight: 0
-          }));
-        } else if (matchedProduct && matchedProduct.materialId) {
-          filamentConsumption = [{
-            materialId: matchedProduct.materialId,
-            materialName: 'Material',
-            plannedWeight: matchedProduct.weight,
-            consumedWeight: 0
-          }];
+        if (matchedPart) {
+          if (matchedPart.colorMode === 'MULTI' && matchedPart.filaments && matchedPart.filaments.length > 0) {
+            filamentConsumption = matchedPart.filaments.map((f: any) => ({
+              materialId: f.materialId,
+              materialName: 'Material ' + f.materialId,
+              plannedWeight: f.weight,
+              consumedWeight: 0
+            }));
+          } else {
+            filamentConsumption = [{
+              materialId: matchedPart.materialId,
+              materialName: 'Material',
+              plannedWeight: matchedPart.weight,
+              consumedWeight: 0
+            }];
+          }
+        } else if (matchedProduct) {
+          if (matchedProduct.colorMode === 'MULTI' && matchedProduct.filaments && matchedProduct.filaments.length > 0) {
+            filamentConsumption = matchedProduct.filaments.map((f: any) => ({
+              materialId: f.materialId,
+              materialName: 'Material ' + f.materialId,
+              plannedWeight: f.weight,
+              consumedWeight: 0
+            }));
+          } else {
+            filamentConsumption = [{
+              materialId: matchedProduct.materialId,
+              materialName: 'Material',
+              plannedWeight: matchedProduct.weight,
+              consumedWeight: 0
+            }];
+          }
         }
 
         let newJobDbId = null;

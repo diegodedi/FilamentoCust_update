@@ -381,7 +381,19 @@ export const Production: React.FC = () => {
                       <td className="p-4">
                         {job.inventoryApplied ? (
                           <span className="text-emerald-600 font-bold flex items-center gap-1 text-xs">
-                            <CheckCircle2 className="w-3 h-3" /> Contabilizado (+{job.quantityProduced})
+                            <CheckCircle2 className="w-3 h-3" /> Contabilizado (
+                            {(() => {
+                              const product = products.find(p => p.id === job.productId);
+                              if (product && product.isMultipart && product.parts) {
+                                const totalParts = product.parts.reduce((sum, p) => sum + (p.quantity || 1), 0);
+                                if (totalParts > 0) {
+                                  const percent = (job.quantityProduced / totalParts) * 100;
+                                  return `+${percent.toFixed(0)}%`;
+                                }
+                              }
+                              return `+${job.quantityProduced}`;
+                            })()}
+                            )
                           </span>
                         ) : (
                           <span className="text-slate-400 text-xs font-medium">Nenhum</span>
