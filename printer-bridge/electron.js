@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage, dialog } from 'electron';
+import { app, BrowserWindow, Tray, Menu, nativeImage, dialog, shell } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
@@ -31,6 +31,12 @@ if (!gotTheLock) {
     win.once('ready-to-show', () => {
       win.show();
       win.focus();
+    });
+
+    // Make external links open in default browser (Chrome)
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url);
+      return { action: 'deny' };
     });
 
     win.on('close', (event) => {
