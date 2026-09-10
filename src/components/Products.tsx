@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useDb } from '../context/DbContext';
-import { Trash2, X, Plus, Edit, Image as ImageIcon, Upload } from 'lucide-react';
+import { Trash2, X, Plus, Edit, Image as ImageIcon, Upload, RotateCcw } from 'lucide-react';
 import { ProductFilament, Product } from '../types';
 import { MultipartProductModal } from './MultipartProductModal';
 
@@ -31,6 +31,34 @@ export const Products: React.FC = () => {
   const [monoWeight, setMonoWeight] = useState(30);
   const [multiFilaments, setMultiFilaments] = useState<ProductFilament[]>([{ materialId: '', weight: 10 }]);
   const [unitsPerPrint, setUnitsPerPrint] = useState(1);
+
+  // New Pricing States
+  const [b2cMargin, setB2cMargin] = useState(50);
+  const [b2cPriceOverride, setB2cPriceOverride] = useState<number | null>(null);
+  
+  const [b2bMargin, setB2bMargin] = useState(30);
+  const [b2bPriceOverride, setB2bPriceOverride] = useState<number | null>(null);
+  const [b2bMinQty, setB2bMinQty] = useState(10);
+  
+  const [marketplacePlatform, setMarketplacePlatform] = useState('Nenhum');
+  const [marketplacePriceOverride, setMarketplacePriceOverride] = useState<number | null>(null);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+  const DEFAULT_CATEGORIES = [
+    "Instrumento",
+    "Decoração",
+    "Geek/Nerd",
+    "Utilidades",
+    "Brinquedos",
+    "Action Figures",
+    "Acessórios",
+    "Personalizados"
+  ];
+  
+  const allCategories = Array.from(new Set([
+    ...DEFAULT_CATEGORIES,
+    ...products.map(p => p.category).filter(Boolean)
+  ]));
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,8 +132,26 @@ export const Products: React.FC = () => {
   const rawCost = getFilamentCost();
   const safeCost = typeof rawCost === 'number' && !isNaN(rawCost) ? rawCost : 0;
   const currentCost = safeCost + (totalPrintTime * 0.01) + (Number(accessoryCost) || 0);
-  const currentB2B = currentCost * 4;
-  const currentB2C = currentB2B * 2;
+  
+  const suggestedB2C = currentCost * (1 + (b2cMargin / 100));
+  const currentB2C = b2cPriceOverride !== null ? b2cPriceOverride : suggestedB2C;
+
+  const suggestedB2B = currentCost * (1 + (b2bMargin / 100));
+  const currentB2B = b2bPriceOverride !== null ? b2bPriceOverride : suggestedB2B;
+
+  let calculatedMarketplacePrice = currentB2C;
+  if (marketplacePlatform === 'Mercado Livre Clássico (11.5% + R$6)') {
+    calculatedMarketplacePrice = (currentB2C + 6) / (1 - 0.115);
+  } else if (marketplacePlatform === 'Mercado Livre Premium (16.5% + R$6)') {
+    calculatedMarketplacePrice = (currentB2C + 6) / (1 - 0.165);
+  } else if (marketplacePlatform === 'Shopee (20%)') {
+    calculatedMarketplacePrice = currentB2C / (1 - 0.20);
+  } else if (marketplacePlatform === 'Amazon (15%)') {
+    calculatedMarketplacePrice = currentB2C / (1 - 0.15);
+  } else if (marketplacePlatform === 'AliExpress (10%)') {
+    calculatedMarketplacePrice = currentB2C / (1 - 0.10);
+  }
+  const finalMarketplacePrice = marketplacePriceOverride !== null ? marketplacePriceOverride : calculatedMarketplacePrice;
 
   const handleOpenAddModal = () => {
     setEditingId(null);
@@ -120,6 +166,16 @@ export const Products: React.FC = () => {
     setMonoWeight(30);
     setMultiFilaments([{ materialId: '', weight: 10 }]);
     setUnitsPerPrint(1);
+    
+    setB2cMargin(50);
+    setB2cPriceOverride(null);
+    setB2bMargin(30);
+    setB2bPriceOverride(null);
+    setB2bMinQty(10);
+    setMarketplacePlatform('Nenhum');
+    setMarketplacePriceOverride(null);
+    setIsCustomCategory(false);
+    
     setIsModalOpen(true);
   };
 
@@ -147,6 +203,16 @@ export const Products: React.FC = () => {
       setMonoMaterialId(p.filaments?.[0]?.materialId || p.materialId);
       setMonoWeight(p.filaments?.[0]?.weight || p.weight);
     }
+    
+    setB2cMargin(p.b2cMargin ?? 50);
+    setB2cPriceOverride(p.b2cPriceOverride ?? null);
+    setB2bMargin(p.b2bMargin ?? 30);
+    setB2bPriceOverride(p.b2bPriceOverride ?? null);
+    setB2bMinQty(p.b2bMinQty ?? 10);
+    setMarketplacePlatform(p.marketplacePlatform ?? 'Nenhum');
+    setMarketplacePriceOverride(p.marketplacePriceOverride ?? null);
+    setIsCustomCategory(false);
+    
     setIsModalOpen(true);
   };
 
@@ -195,8 +261,17 @@ export const Products: React.FC = () => {
       colorMode,
       filaments: finalFilaments,
       costPrice: parseFloat(currentCost.toFixed(2)),
+      b2bMargin,
+      b2bMinQty,
       b2bPrice: parseFloat(currentB2B.toFixed(2)),
-      sellPrice: parseFloat(currentB2C.toFixed(2)),
+      b2bPriceOverride: b2bPriceOverride !== null ? b2bPriceOverride : null,
+      sellPrice: parseFloat(currentB2C.toFixed(2)), // Maps to Suggested Price
+      b2cMargin,
+      b2cPrice: parseFloat(currentB2C.toFixed(2)),
+      b2cPriceOverride: b2cPriceOverride !== null ? b2cPriceOverride : null,
+      marketplacePlatform,
+      marketplacePrice: parseFloat(finalMarketplacePrice.toFixed(2)),
+      marketplacePriceOverride: marketplacePriceOverride !== null ? marketplacePriceOverride : null,
       profit: parseFloat((currentB2C - currentCost).toFixed(2)),
       materialId: finalFilaments[0]?.materialId || '', // fallback
       image
@@ -296,13 +371,19 @@ export const Products: React.FC = () => {
                   <span className="font-mono font-medium text-slate-200">R$ {p.costPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Preço B2B:</span>
+                  <span className="text-slate-400">Preço B2B (Mín: {p.b2bMinQty || 10} un):</span>
                   <span className="font-mono font-bold text-[#0084FF]">R$ {(p.b2bPrice || (p.costPrice * 4)).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-200 font-medium">Preço Final:</span>
-                  <span className="font-mono font-bold text-[#22C55E]">R$ {p.sellPrice.toFixed(2)}</span>
+                  <span className="text-slate-200 font-medium">Preço Sugerido (B2C):</span>
+                  <span className="font-mono font-bold text-[#22C55E]">R$ {(p.b2cPrice || p.sellPrice).toFixed(2)}</span>
                 </div>
+                {p.marketplacePlatform && p.marketplacePlatform !== 'Nenhum' && (
+                  <div className="flex justify-between items-center text-xs mt-1 pt-1 border-t border-[#2B2F36]">
+                    <span className="text-slate-400">Plataforma ({p.marketplacePlatform.split(' ')[0]}):</span>
+                    <span className="font-mono font-bold text-[#F59E0B]">R$ {(p.marketplacePrice || 0).toFixed(2)}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -389,14 +470,47 @@ export const Products: React.FC = () => {
                   
                   <div className="space-y-2">
                     <label className="font-label-md text-slate-400 text-xs uppercase block">Categoria</label>
-                    <input 
-                      type="text" 
-                      placeholder="ex: Instrumento"
-                      value={category}
-                      onChange={e => setCategory(e.target.value)}
-                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                      required
-                    />
+                    {isCustomCategory ? (
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Digite a nova categoria..."
+                          value={category}
+                          onChange={e => setCategory(e.target.value)}
+                          className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
+                          required
+                          autoFocus
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setIsCustomCategory(false);
+                            setCategory(DEFAULT_CATEGORIES[0]);
+                          }}
+                          className="px-3 bg-[#2B2F36] hover:bg-[#3f444e] rounded-lg text-slate-300 text-sm font-bold transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <select
+                        value={category}
+                        onChange={e => {
+                          if (e.target.value === 'NEW') {
+                            setIsCustomCategory(true);
+                            setCategory('');
+                          } else {
+                            setCategory(e.target.value);
+                          }
+                        }}
+                        className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
+                      >
+                        {allCategories.map(cat => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                        <option value="NEW">+ Nova Categoria...</option>
+                      </select>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -560,30 +674,158 @@ export const Products: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border border-[#2563EB]/20 bg-[#0084FF]/5 p-5 rounded-xl">
-                  <h3 className="text-xs font-bold text-[#0084FF] uppercase mb-4 tracking-wider">Cálculos Finais</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs text-slate-400 uppercase block">Custo de Produção</label>
-                      <div className="text-lg text-white font-bold font-mono">
-                        R$ {currentCost.toFixed(2)}
+                <div className="border border-[#2563EB]/20 bg-[#0084FF]/5 p-5 rounded-xl space-y-6">
+                  <h3 className="text-sm font-bold text-[#0084FF] uppercase tracking-wider">Precificação do Produto</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* B2C Pricing */}
+                    <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4 space-y-4">
+                      <h4 className="text-xs font-bold text-[#22C55E] uppercase mb-2">B2C - Consumidor Final</h4>
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Margem de Lucro (%)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={b2cMargin}
+                          onChange={e => {
+                            setB2cMargin(Number(e.target.value));
+                            setB2cPriceOverride(null); // Reset override on margin change
+                          }}
+                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#22C55E] outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Preço B2C (Editável)</label>
+                        <div className="relative w-full">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={b2cPriceOverride !== null ? b2cPriceOverride : parseFloat(suggestedB2C.toFixed(2))}
+                            onChange={e => setB2cPriceOverride(e.target.value === '' ? null : Number(e.target.value))}
+                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-[#22C55E] font-bold focus:border-[#22C55E] outline-none pr-10"
+                          />
+                          {b2cPriceOverride !== null && (
+                            <button
+                              type="button"
+                              onClick={() => setB2cPriceOverride(null)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#22C55E] transition-colors"
+                              title="Restaurar padrão sugerido"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-slate-400 uppercase block">Venda B2B (Lojistas)</label>
-                      <div className="text-lg text-[#0084FF] font-bold font-mono">
-                        R$ {currentB2B.toFixed(2)}
+
+                    {/* B2B Pricing */}
+                    <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4 space-y-4">
+                      <h4 className="text-xs font-bold text-[#0084FF] uppercase mb-2">B2B - Para Empresas</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-slate-400 block mb-1">Margem (%)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={b2bMargin}
+                            onChange={e => {
+                              setB2bMargin(Number(e.target.value));
+                              setB2bPriceOverride(null);
+                            }}
+                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#0084FF] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-400 block mb-1">Qtd Mínima</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={b2bMinQty}
+                            onChange={e => setB2bMinQty(Number(e.target.value))}
+                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#0084FF] outline-none"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-slate-400 uppercase block">Venda B2C (Cliente Final)</label>
-                      <div className="text-lg text-[#22C55E] font-bold font-mono">
-                        R$ {currentB2C.toFixed(2)}
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Preço B2B (Editável)</label>
+                        <div className="relative w-full">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={b2bPriceOverride !== null ? b2bPriceOverride : parseFloat(suggestedB2B.toFixed(2))}
+                            onChange={e => setB2bPriceOverride(e.target.value === '' ? null : Number(e.target.value))}
+                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-[#0084FF] font-bold focus:border-[#0084FF] outline-none pr-10"
+                          />
+                          {b2bPriceOverride !== null && (
+                            <button
+                              type="button"
+                              onClick={() => setB2bPriceOverride(null)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#0084FF] transition-colors"
+                              title="Restaurar padrão sugerido"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono mt-4 pt-3 border-t border-[#2563EB]/10">
-                    Custo = Filamento(s) + (Tempo de Impressão × 0,01) + Acessório
+
+                  {/* Marketplaces */}
+                  <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4">
+                    <h4 className="text-xs font-bold text-[#F59E0B] uppercase mb-4">Markup Inverso para Marketplaces</h4>
+                    <p className="text-[10px] text-slate-400 mb-3">Selecione uma plataforma para saber por quanto você deve anunciar o produto nela, para que após as taxas, você ainda receba exatamente o valor definido no B2C acima (R$ {currentB2C.toFixed(2)}).</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                      <div>
+                        <label className="text-xs text-slate-400 block mb-1">Plataforma</label>
+                        <select
+                          value={marketplacePlatform}
+                          onChange={e => {
+                            setMarketplacePlatform(e.target.value);
+                            setMarketplacePriceOverride(null);
+                          }}
+                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#F59E0B] outline-none"
+                        >
+                          <option value="Nenhum">Nenhum</option>
+                          <option value="Mercado Livre Clássico (11.5% + R$6)">Mercado Livre Clássico (11.5% + R$6)</option>
+                          <option value="Mercado Livre Premium (16.5% + R$6)">Mercado Livre Premium (16.5% + R$6)</option>
+                          <option value="Shopee (20%)">Shopee (20%)</option>
+                          <option value="Amazon (15%)">Amazon (15%)</option>
+                          <option value="AliExpress (10%)">AliExpress (10%)</option>
+                        </select>
+                      </div>
+                      {marketplacePlatform !== 'Nenhum' && (
+                        <div>
+                          <label className="text-xs text-slate-400 block mb-1">Preço Plataforma (Editável)</label>
+                          <div className="relative w-full">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={marketplacePriceOverride !== null ? marketplacePriceOverride : parseFloat(calculatedMarketplacePrice.toFixed(2))}
+                              onChange={e => setMarketplacePriceOverride(e.target.value === '' ? null : Number(e.target.value))}
+                              className="w-full bg-[#1C1F24] border border-[#F59E0B]/50 rounded px-3 py-2 text-lg text-[#F59E0B] font-bold focus:border-[#F59E0B] outline-none pr-10"
+                            />
+                            {marketplacePriceOverride !== null && (
+                              <button
+                                type="button"
+                                onClick={() => setMarketplacePriceOverride(null)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#F59E0B] transition-colors"
+                                title="Restaurar padrão sugerido"
+                              >
+                                <RotateCcw className="w-5 h-5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono mt-4 pt-3 border-t border-[#2563EB]/10">
+                    <span>Custo Total de Produção: <strong className="text-white">R$ {currentCost.toFixed(2)}</strong></span>
                   </div>
                 </div>
 

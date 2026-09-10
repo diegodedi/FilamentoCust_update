@@ -1,7 +1,7 @@
 {
   "name": "react-example",
   "private": true,
-  "version": "1.0.13",
+  "version": "1.0.14",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite --port=3000 --host=0.0.0.0\" \"npm run printer-bridge\"",
@@ -50,7 +50,7 @@
     "appId": "com.filamentocust.app",
     "productName": "Filamento Cust",
     "directories": {
-      "output": "dist_app"
+      "output": ".dist_app"
     },
     "files": [
       "dist/**/*",

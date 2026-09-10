@@ -28,7 +28,16 @@ export interface Product {
   accessoryCost?: number; // Optional accessory cost
   costPrice: number; // calculated cost
   b2bPrice?: number; // calculated B2B price
-  sellPrice: number;
+  b2bMargin?: number;
+  b2bMinQty?: number;
+  sellPrice: number; // Used as Suggested Price
+  b2cPrice?: number;
+  b2cMargin?: number;
+  marketplacePlatform?: string;
+  marketplacePrice?: number;
+  b2cPriceOverride?: number | null;
+  b2bPriceOverride?: number | null;
+  marketplacePriceOverride?: number | null;
   profit: number; // calculated profit
   unitsPerPrint?: number;
   image?: string;

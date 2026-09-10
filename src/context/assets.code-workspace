@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../assets"
+		},
+		{
+			"path": "../../printer-bridge"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../workspace"
+		}
+	]
+}

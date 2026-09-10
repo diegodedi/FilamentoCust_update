@@ -8,3 +8,5 @@ coverage/
 !.env.example
 dist_app/
 dist_electron/
+
+.dist_app/
