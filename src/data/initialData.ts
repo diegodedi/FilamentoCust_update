@@ -11,7 +11,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 75.00,
     unitPrice: 1.50,
     purchaseDate: "2026-08-15",
-    image: ""
+    image: "https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop"
   },
   {
     id: "sup-02",
@@ -23,7 +23,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 45.00,
     unitPrice: 0.45,
     purchaseDate: "2026-08-20",
-    image: ""
+    image: "https://images.unsplash.com/photo-1620324838382-70670d8a571f?q=80&w=500&auto=format&fit=crop"
   },
   {
     id: "sup-03",
@@ -35,7 +35,7 @@ export const initialSupplies: Supply[] = [
     packagePrice: 35.00,
     unitPrice: 3.50,
     purchaseDate: "2026-09-01",
-    image: ""
+    image: "https://images.unsplash.com/photo-1595180631620-137b02c8153c?q=80&w=500&auto=format&fit=crop"
   }
 ];
 

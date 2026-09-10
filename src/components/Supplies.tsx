@@ -4,6 +4,20 @@ import { Supply } from '../types';
 import { Search, Plus, Trash2, Edit, ExternalLink, Package, Building2 } from 'lucide-react';
 import { SupplyModal } from './SupplyModal';
 
+const SUPPLY_IMAGES: Record<string, string> = {
+  'Caixa de papelão': 'https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop',
+  'Plástico bolha': 'https://images.unsplash.com/photo-1620324838382-70670d8a571f?q=80&w=500&auto=format&fit=crop',
+  'Fita adesiva': 'https://images.unsplash.com/photo-1595180631620-137b02c8153c?q=80&w=500&auto=format&fit=crop',
+  'Outros': 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=80&w=500&auto=format&fit=crop'
+};
+
+const INVALID_IMAGES = [
+  "https://upload.wikimedia.org/wikipedia/commons/7/7b/3DBenchy_created_using_color_mixing_on_an_FDM_printer.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/b/be/3D_Printed_RFB_cell_frame_printed_on_Prusa_i3.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/b/b6/Assembled_Prusa_Mendel.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/4/46/Bobina_PLA.jpg"
+];
+
 export const Supplies: React.FC = () => {
   const { supplies, addSupply, updateSupply, deleteSupply } = useDb();
 
@@ -104,11 +118,15 @@ export const Supplies: React.FC = () => {
                   {items.map(supply => (
                     <div key={supply.id} className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl overflow-hidden hover:shadow-md transition-all group flex flex-col justify-between">
                       <div className="relative h-48 bg-[#121418] w-full flex items-center justify-center overflow-hidden border-b border-[#2B2F36]">
-                        {supply.image ? (
-                          <img src={supply.image} alt={supply.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" referrerPolicy="no-referrer" />
-                        ) : (
-                          <Package className="w-16 h-16 text-[#2B2F36]" />
-                        )}
+                        {(() => {
+                          let imgUrl = supply.image;
+                          if (!imgUrl || INVALID_IMAGES.includes(imgUrl)) {
+                            imgUrl = SUPPLY_IMAGES[supply.type] || SUPPLY_IMAGES['Outros'];
+                          }
+                          return (
+                            <img src={imgUrl} alt={supply.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" referrerPolicy="no-referrer" />
+                          );
+                        })()}
                       </div>
 
                       <div className="p-5 flex-1 flex flex-col">

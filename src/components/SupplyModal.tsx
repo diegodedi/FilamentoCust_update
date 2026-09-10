@@ -9,12 +9,12 @@ interface SupplyModalProps {
   initialSupply: Supply | null;
 }
 
-const DEFAULT_IMAGES = [
-  "https://upload.wikimedia.org/wikipedia/commons/7/7b/3DBenchy_created_using_color_mixing_on_an_FDM_printer.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/b/be/3D_Printed_RFB_cell_frame_printed_on_Prusa_i3.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/b/b6/Assembled_Prusa_Mendel.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/4/46/Bobina_PLA.jpg"
-];
+const SUPPLY_IMAGES: Record<string, string> = {
+  'Caixa de papelão': 'https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop',
+  'Plástico bolha': 'https://images.unsplash.com/photo-1620324838382-70670d8a571f?q=80&w=500&auto=format&fit=crop',
+  'Fita adesiva': 'https://images.unsplash.com/photo-1595180631620-137b02c8153c?q=80&w=500&auto=format&fit=crop',
+  'Outros': 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=80&w=500&auto=format&fit=crop'
+};
 
 export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSave, initialSupply }) => {
   const [type, setType] = useState<'Caixa de papelão' | 'Plástico bolha' | 'Fita adesiva' | 'Outros'>('Caixa de papelão');
@@ -49,7 +49,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
       setPackagePrice(0);
       setPurchaseDate(new Date().toISOString().split('T')[0]);
       setNotes('');
-      setImage(DEFAULT_IMAGES[0]);
+      setImage(SUPPLY_IMAGES['Caixa de papelão']);
     }
   }, [initialSupply, isOpen]);
 
@@ -129,7 +129,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
                 <div className="flex-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Imagens Padrão</label>
                   <div className="flex gap-2 overflow-x-auto pb-1">
-                    {DEFAULT_IMAGES.map((img, i) => (
+                    {Object.values(SUPPLY_IMAGES).map((img, i) => (
                       <button
                         key={i}
                         type="button"
@@ -148,7 +148,14 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
               <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Tipo de Insumo *</label>
               <select 
                 value={type} 
-                onChange={(e: any) => setType(e.target.value)}
+                onChange={(e: any) => {
+                  const newType = e.target.value;
+                  setType(newType);
+                  // If the user hasn't uploaded a custom image (i.e., image is one of the defaults), switch it automatically
+                  if (!image || Object.values(SUPPLY_IMAGES).includes(image)) {
+                    setImage(SUPPLY_IMAGES[newType]);
+                  }
+                }}
                 className="w-full bg-[#121418] border border-[#2B2F36] text-white rounded-lg px-4 py-3 focus:outline-none focus:border-[#0084FF] text-sm"
               >
                 <option value="Caixa de papelão">Caixa de papelão</option>
