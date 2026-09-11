@@ -33,8 +33,15 @@ if (!gotTheLock) {
       win.focus();
     });
 
-    // Make external links open in default browser (Chrome)
+    // Make external links open in default browser (Chrome), but allow Firebase/Google Auth popups
     win.webContents.setWindowOpenHandler(({ url }) => {
+      if (
+        url.includes('firebaseapp.com/__/auth/') || 
+        url.includes('accounts.google.com') ||
+        url.includes('oauth')
+      ) {
+        return { action: 'allow' };
+      }
       shell.openExternal(url);
       return { action: 'deny' };
     });
