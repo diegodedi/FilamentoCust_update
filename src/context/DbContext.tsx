@@ -161,23 +161,35 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     const localSellers = localStorage.getItem('forge_sellers');
     const localSupplies = localStorage.getItem('forge_supplies');
 
-    if (localProducts) setProducts(JSON.parse(localProducts));
-    else setProducts([]); 
+    if (localProducts) {
+      const parsed = JSON.parse(localProducts);
+      setProducts(parsed.length > 0 ? parsed : initialProducts);
+    } else setProducts(initialProducts); 
 
-    if (localInventory) setInventory(JSON.parse(localInventory));
-    else setInventory([]);
+    if (localInventory) {
+      const parsed = JSON.parse(localInventory);
+      setInventory(parsed.length > 0 ? parsed : initialInventory);
+    } else setInventory(initialInventory);
 
-    if (localMaterials) setMaterials(JSON.parse(localMaterials));
-    else setMaterials([]);
+    if (localMaterials) {
+      const parsed = JSON.parse(localMaterials);
+      setMaterials(parsed.length > 0 ? parsed : initialMaterials);
+    } else setMaterials(initialMaterials);
 
-    if (localCustomers) setCustomers(JSON.parse(localCustomers));
-    else setCustomers([]);
+    if (localCustomers) {
+      const parsed = JSON.parse(localCustomers);
+      setCustomers(parsed.length > 0 ? parsed : initialCustomers);
+    } else setCustomers(initialCustomers);
 
-    if (localSales) setSales(JSON.parse(localSales));
-    else setSales([]);
+    if (localSales) {
+      const parsed = JSON.parse(localSales);
+      setSales(parsed.length > 0 ? parsed : initialSales);
+    } else setSales(initialSales);
 
-    if (localFinancial) setFinancialLogs(JSON.parse(localFinancial));
-    else setFinancialLogs([]);
+    if (localFinancial) {
+      const parsed = JSON.parse(localFinancial);
+      setFinancialLogs(parsed.length > 0 ? parsed : initialFinancialLogs);
+    } else setFinancialLogs(initialFinancialLogs);
 
     if (localSellers) setSellers(JSON.parse(localSellers));
     else setSellers([]);

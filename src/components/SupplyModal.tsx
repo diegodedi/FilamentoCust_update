@@ -9,11 +9,16 @@ interface SupplyModalProps {
   initialSupply: Supply | null;
 }
 
+import boxImg from '../assets/supplies/box.jpg';
+import bubbleWrapImg from '../assets/supplies/bubble_wrap.jpg';
+import tapeImg from '../assets/supplies/tape.jpg';
+import othersImg from '../assets/supplies/others.jpg';
+
 const SUPPLY_IMAGES: Record<string, string> = {
-  'Caixa de papelão': 'https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop',
-  'Plástico bolha': 'https://images.unsplash.com/photo-1620324838382-70670d8a571f?q=80&w=500&auto=format&fit=crop',
-  'Fita adesiva': 'https://images.unsplash.com/photo-1595180631620-137b02c8153c?q=80&w=500&auto=format&fit=crop',
-  'Outros': 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=80&w=500&auto=format&fit=crop'
+  'Caixa de papelão': boxImg,
+  'Plástico bolha': bubbleWrapImg,
+  'Fita adesiva': tapeImg,
+  'Outros': othersImg
 };
 
 export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSave, initialSupply }) => {
@@ -109,36 +114,30 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
               <h3 className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Imagem do Insumo</h3>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-32 h-32 bg-[#2B2F36] rounded-xl border-2 border-dashed border-[#2B2F36] flex items-center justify-center overflow-hidden relative group shrink-0">
-                  {image ? (
-                    <>
-                      <img src={image} alt="Preview" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button type="button" onClick={() => fileInputRef.current?.click()} className="text-white text-xs font-bold bg-black/50 px-2 py-1 rounded-full flex items-center gap-1">
-                          <Upload className="w-3 h-3" /> Trocar
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-slate-400 flex flex-col items-center gap-1 hover:text-[#0084FF] transition-colors">
-                      <Upload className="w-5 h-5" />
-                      <span className="text-[10px] font-medium uppercase">Upload</span>
-                    </button>
-                  )}
-                  <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
+                  {(() => {
+                    let displayImage = image;
+                    if (!displayImage || displayImage.includes('unsplash.com')) {
+                      displayImage = SUPPLY_IMAGES[type] || SUPPLY_IMAGES['Outros'];
+                    }
+                    return (
+                      <img src={displayImage} alt={name || type} className="w-full h-full object-cover" />
+                    );
+                  })()}
                 </div>
                 <div className="flex-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Imagens Padrão</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Imagem Padrão Selecionada</label>
                   <div className="flex gap-2 overflow-x-auto pb-1">
-                    {Object.values(SUPPLY_IMAGES).map((img, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setImage(img)}
-                        className={`w-12 h-12 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${image === img ? 'border-[#0084FF] shadow-sm scale-105' : 'border-transparent hover:border-[#3A3F47]'}`}
-                      >
-                        <img src={img} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt={`Preset ${i+1}`} />
-                      </button>
-                    ))}
+                    {(() => {
+                      let displayImage = image;
+                      if (!displayImage || displayImage.includes('unsplash.com')) {
+                        displayImage = SUPPLY_IMAGES[type] || SUPPLY_IMAGES['Outros'];
+                      }
+                      return (
+                        <div className={`w-12 h-12 shrink-0 rounded-lg overflow-hidden border-2 transition-all border-[#0084FF] shadow-sm scale-105`}>
+                          <img src={displayImage} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt={`Preset`} />
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

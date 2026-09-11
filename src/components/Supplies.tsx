@@ -4,11 +4,16 @@ import { Supply } from '../types';
 import { Search, Plus, Trash2, Edit, ExternalLink, Package, Building2 } from 'lucide-react';
 import { SupplyModal } from './SupplyModal';
 
+import boxImg from '../assets/supplies/box.jpg';
+import bubbleWrapImg from '../assets/supplies/bubble_wrap.jpg';
+import tapeImg from '../assets/supplies/tape.jpg';
+import othersImg from '../assets/supplies/others.jpg';
+
 const SUPPLY_IMAGES: Record<string, string> = {
-  'Caixa de papelão': 'https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop',
-  'Plástico bolha': 'https://images.unsplash.com/photo-1620324838382-70670d8a571f?q=80&w=500&auto=format&fit=crop',
-  'Fita adesiva': 'https://images.unsplash.com/photo-1595180631620-137b02c8153c?q=80&w=500&auto=format&fit=crop',
-  'Outros': 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=80&w=500&auto=format&fit=crop'
+  'Caixa de papelão': boxImg,
+  'Plástico bolha': bubbleWrapImg,
+  'Fita adesiva': tapeImg,
+  'Outros': othersImg
 };
 
 const INVALID_IMAGES = [
@@ -120,11 +125,23 @@ export const Supplies: React.FC = () => {
                       <div className="relative h-48 bg-[#121418] w-full flex items-center justify-center overflow-hidden border-b border-[#2B2F36]">
                         {(() => {
                           let imgUrl = supply.image;
-                          if (!imgUrl || INVALID_IMAGES.includes(imgUrl)) {
+                          if (!imgUrl || INVALID_IMAGES.includes(imgUrl) || imgUrl.includes('unsplash.com')) {
                             imgUrl = SUPPLY_IMAGES[supply.type] || SUPPLY_IMAGES['Outros'];
                           }
                           return (
-                            <img src={imgUrl} alt={supply.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" referrerPolicy="no-referrer" />
+                            <img 
+                              src={imgUrl} 
+                              alt={supply.name} 
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = SUPPLY_IMAGES[supply.type] || SUPPLY_IMAGES['Outros'];
+                                if (target.src !== fallback) {
+                                  target.src = fallback;
+                                }
+                              }}
+                            />
                           );
                         })()}
                       </div>
