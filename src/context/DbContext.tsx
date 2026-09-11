@@ -150,9 +150,20 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
 
   // Load initial data
   useEffect(() => {
-    const localProducts = localStorage.getItem('forge_products');
-    const localInventory = localStorage.getItem('forge_inventory');
-    const localMaterials = localStorage.getItem('forge_materials');
+    let localProducts = localStorage.getItem('forge_products');
+    let localInventory = localStorage.getItem('forge_inventory');
+    let localMaterials = localStorage.getItem('forge_materials');
+
+    // MIGRATION: Se o usuário ficou com os dados iniciais falsos ('Vortex Case MkII'), nós os removemos para carregar os dados recuperados
+    if (localProducts && localProducts.includes('Vortex Case MkII')) {
+      localStorage.removeItem('forge_products');
+      localStorage.removeItem('forge_inventory');
+      localStorage.removeItem('forge_materials');
+      localProducts = null;
+      localInventory = null;
+      localMaterials = null;
+    }
+
     const localCustomers = localStorage.getItem('forge_customers');
     const localSales = localStorage.getItem('forge_sales');
     const localFinancial = localStorage.getItem('forge_financial');
@@ -162,18 +173,15 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     const localSupplies = localStorage.getItem('forge_supplies');
 
     if (localProducts) {
-      const parsed = JSON.parse(localProducts);
-      setProducts(parsed.length > 0 ? parsed : initialProducts);
+      setProducts(JSON.parse(localProducts));
     } else setProducts(initialProducts); 
 
     if (localInventory) {
-      const parsed = JSON.parse(localInventory);
-      setInventory(parsed.length > 0 ? parsed : initialInventory);
+      setInventory(JSON.parse(localInventory));
     } else setInventory(initialInventory);
 
     if (localMaterials) {
-      const parsed = JSON.parse(localMaterials);
-      setMaterials(parsed.length > 0 ? parsed : initialMaterials);
+      setMaterials(JSON.parse(localMaterials));
     } else setMaterials(initialMaterials);
 
     if (localCustomers) {

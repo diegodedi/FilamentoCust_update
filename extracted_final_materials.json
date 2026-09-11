@@ -1,0 +1,40 @@
+[
+  {
+    "name": "PLA Velvet",
+    "color": "Azul Velvet",
+    "brand": "Volt",
+    "initialWeight": 1000,
+    "currentWeight": 939.1477919947544,
+    "spoolPrice": 129.9,
+    "costPerGram": 0.1299,
+    "purchaseDate": "2026-09-01",
+    "colorHex": "#203765",
+    "priceHistory": [
+      {
+        "date": "2026-09-01",
+        "price": 129.9
+      }
+    ],
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAvt5ZcSOqhtMILXovumWX0rswNGdB3aEgEFW7B8WyU6E9UoxOfQL9MrlgMTEE3xpT9L7BWwCrWK6UqhDCLB_H-3k4qUhL_jg37sGYoSw5fLuIi80XIMtsYJUKD091bi_wRle9hvI8bVM4ejMglQjqehyfzaj66T4qqgAhUl0UHmvkg8ZaqXVn18_zi7RDjNPZuAK7lT9ByqSClAvM_KmPzWsIN-ItERmlc8MBDWAL_gFcXL1bkc76ULjYRVPdBHzOeFZNeR_Hgikg",
+    "id": "mat-799"
+  },
+  {
+    "name": "PLA Velvet",
+    "color": "Rosa Bebê Velvet",
+    "brand": "Volt",
+    "initialWeight": 1000,
+    "currentWeight": 994.2529680592455,
+    "spoolPrice": 139.9,
+    "costPerGram": 0.1399,
+    "purchaseDate": "2026-09-09",
+    "colorHex": "#F9A8D4",
+    "priceHistory": [
+      {
+        "date": "2026-09-09",
+        "price": 139.9
+      }
+    ],
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAvt5ZcSOqhtMILXovumWX0rswNGdB3aEgEFW7B8WyU6E9UoxOfQL9MrlgMTEE3xpT9L7BWwCrWK6UqhDCLB_H-3k4qUhL_jg37sGYoSw5fLuIi80XIMtsYJUKD091bi_wRle9hvI8bVM4ejMglQjqehyfzaj66T4qqgAhUl0UHmvkg8ZaqXVn18_zi7RDjNPZuAK7lT9ByqSClAvM_KmPzWsIN-ItERmlc8MBDWAL_gFcXL1bkc76ULjYRVPdBHzOeFZNeR_Hgikg",
+    "id": "mat-417"
+  }
+]
