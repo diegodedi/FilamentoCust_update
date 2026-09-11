@@ -11,6 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "level": "^10.0.0"
+    "level": "^10.0.0",
+    "snappy": "^7.4.3"
   }
 }

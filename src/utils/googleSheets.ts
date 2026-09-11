@@ -204,7 +204,6 @@ export const pushDataToSpreadsheet = async (
     'Clientes!A1:Z1000',
     'Financeiro!A1:Z1000',
     'Produção!A1:Z1000',
-    'Produção!A1:Z1000',
     'Configurações!A1:Z1000'
   ];
   
@@ -314,7 +313,7 @@ export const pushDataToSpreadsheet = async (
       j.productName || "N/A",
       j.duration,
       j.quantityProduced,
-      j.filamentConsumption.map(fc => fc.materialName + " (" + fc.plannedWeight + "g)").join(", "),
+      (j.filamentConsumption || []).map(fc => fc.materialName + " (" + fc.plannedWeight + "g)").join(", "),
       j.status,
       j.inventoryApplied ? "SIM" : "NÃO"
     ])

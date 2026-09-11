@@ -8,7 +8,8 @@ import {
   initialSales,
   initialFinancialLogs,
   initialCostConfig,
-  initialSupplies
+  initialSupplies,
+  initialPrintJobs
 } from '../data/initialData';
 import {
   googleSignIn,
@@ -212,8 +213,19 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     if (localSync) setSyncConfig(JSON.parse(localSync));
     const localPrinters = localStorage.getItem('3derp_printers');
     if (localPrinters) setPrinters(JSON.parse(localPrinters));
-    const localPrintJobs = localStorage.getItem('3derp_printJobs');
-    if (localPrintJobs) setPrintJobs(JSON.parse(localPrintJobs));
+    
+    let localPrintJobs = localStorage.getItem('3derp_printJobs');
+    // MIGRATION: Restore print jobs if missing or empty
+    if (!localPrintJobs || localPrintJobs === '[]' || localPrintJobs === 'null') {
+      if (initialPrintJobs && initialPrintJobs.length > 0) {
+        setPrintJobs(initialPrintJobs);
+        localStorage.setItem('3derp_printJobs', JSON.stringify(initialPrintJobs));
+      } else {
+        setPrintJobs([]);
+      }
+    } else {
+      setPrintJobs(JSON.parse(localPrintJobs));
+    }
   }, []);
 
   // Save changes to localStorage helper
