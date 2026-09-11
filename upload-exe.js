@@ -4,9 +4,9 @@ dotenv.config();
 
 const token = process.env.GH_TOKEN;
 const repo = 'diegodedi/FilamentoCust_update';
-const tag = 'v1.0.13';
-const fileName = 'Filamento-Cust-Setup-1.0.13.exe';
-const filePath = './dist_app/Filamento Cust Setup 1.0.13.exe';
+const tag = 'v1.0.24';
+const fileName = 'Filamento-Cust-Setup-1.0.24.exe';
+const filePath = './.dist_app/Filamento Cust Setup 1.0.24.exe';
 
 async function upload() {
   console.log(`Getting release ${tag}...`);

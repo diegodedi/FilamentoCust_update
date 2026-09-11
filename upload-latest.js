@@ -4,9 +4,9 @@ dotenv.config();
 
 const token = process.env.GH_TOKEN;
 const repo = 'diegodedi/FilamentoCust_update';
-const tag = 'v1.0.13';
+const tag = 'v1.0.24';
 const fileName = 'latest.yml';
-const filePath = './dist_app/latest.yml';
+const filePath = './.dist_app/latest.yml';
 
 async function upload() {
   // 1. Get release ID
