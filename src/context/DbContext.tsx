@@ -173,31 +173,52 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     const localSellers = localStorage.getItem('forge_sellers');
     const localSupplies = localStorage.getItem('forge_supplies');
 
-    if (localProducts) {
-      setProducts(JSON.parse(localProducts));
+    if (localProducts !== null) {
+      try {
+        setProducts(JSON.parse(localProducts));
+      } catch (e) {
+        setProducts(initialProducts);
+      }
     } else setProducts(initialProducts); 
 
-    if (localInventory) {
-      setInventory(JSON.parse(localInventory));
+    if (localInventory !== null) {
+      try {
+        setInventory(JSON.parse(localInventory));
+      } catch (e) {
+        setInventory(initialInventory);
+      }
     } else setInventory(initialInventory);
 
-    if (localMaterials) {
-      setMaterials(JSON.parse(localMaterials));
+    if (localMaterials !== null) {
+      try {
+        setMaterials(JSON.parse(localMaterials));
+      } catch (e) {
+        setMaterials(initialMaterials);
+      }
     } else setMaterials(initialMaterials);
 
-    if (localCustomers) {
-      const parsed = JSON.parse(localCustomers);
-      setCustomers(parsed.length > 0 ? parsed : initialCustomers);
+    if (localCustomers !== null) {
+      try {
+        setCustomers(JSON.parse(localCustomers));
+      } catch (e) {
+        setCustomers([]);
+      }
     } else setCustomers(initialCustomers);
 
-    if (localSales) {
-      const parsed = JSON.parse(localSales);
-      setSales(parsed.length > 0 ? parsed : initialSales);
+    if (localSales !== null) {
+      try {
+        setSales(JSON.parse(localSales));
+      } catch (e) {
+        setSales([]);
+      }
     } else setSales(initialSales);
 
-    if (localFinancial) {
-      const parsed = JSON.parse(localFinancial);
-      setFinancialLogs(parsed.length > 0 ? parsed : initialFinancialLogs);
+    if (localFinancial !== null) {
+      try {
+        setFinancialLogs(JSON.parse(localFinancial));
+      } catch (e) {
+        setFinancialLogs([]);
+      }
     } else setFinancialLogs(initialFinancialLogs);
 
     if (localSellers) setSellers(JSON.parse(localSellers));
