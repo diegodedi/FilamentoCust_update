@@ -2,11 +2,13 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const version = pkg.version;
 const token = process.env.GH_TOKEN;
 const repo = 'diegodedi/FilamentoCust_update';
-const tag = 'v1.0.24';
-const fileName = 'Filamento-Cust-Setup-1.0.24.exe';
-const filePath = './.dist_app/Filamento Cust Setup 1.0.24.exe';
+const tag = `v${version}`;
+const fileName = `Filamento-Cust-Setup-${version}.exe`;
+const filePath = `./.dist_app/Filamento Cust Setup ${version}.exe`;
 
 async function upload() {
   console.log(`Getting release ${tag}...`);
