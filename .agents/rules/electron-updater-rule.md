@@ -1,16 +1,15 @@
-# Regra de AtualizaÁ„o do Electron (electron-updater)
+# Regra de Atualiza√ß√£o do Electron (electron-updater)
 
-**CRITICAL RULE: NUNCA remova a configuraÁ„o \publish\ do bloco \uild\ no arquivo \package.json\.**
+**CRITICAL RULE: NUNCA remova a configura√ß√£o "publish" do bloco "build" no arquivo package.json.**
 
 ## Motivo
-O sistema de atualizaÁ„o autom·tica (auto-updater) via GitHub Releases depende da configuraÁ„o \publish\ dentro do objeto \uild\ do \package.json\. Se essa configuraÁ„o for removida, o \electron-builder\ n„o gerar· o arquivo \latest.yml\ durante o processo de build, e o aplicativo instalado no computador do usu·rio n„o conseguir· verificar, baixar e instalar as atualizaÁıes automaticamente.
+O sistema de atualiza√ß√£o autom√°tica (auto-updater) via GitHub Releases depende da configura√ß√£o `"publish"` dentro do objeto `"build"` do `package.json`. Se essa configura√ß√£o for removida, o `electron-builder` n√£o gerar√° o arquivo `latest.yml` durante o processo de build, e o aplicativo instalado no computador do usu√°rio n√£o conseguir√° verificar, baixar e instalar as atualiza√ß√µes automaticamente.
 
-## Exemplo da ConfiguraÁ„o ObrigatÛria
-O \package.json\ deve SEMPRE conter a seguinte estrutura no bloco \uild\:
+## Exemplo da Configura√ß√£o Obrigat√≥ria
+O `package.json` deve SEMPRE conter a seguinte estrutura no bloco `"build"`:
 
-\\\json
+```json
 "build": {
-  ...
   "publish": [
     {
       "provider": "github",
@@ -20,7 +19,7 @@ O \package.json\ deve SEMPRE conter a seguinte estrutura no bloco \uild\:
     }
   ]
 }
-\\\
+```
 
-## AÁ„o Requerida do Agente
-Sempre que for modificar o \package.json\, certifique-se de que o bloco \publish\ continue existindo e configurado corretamente para o GitHub do repositÛrio.
+## A√ß√£o Requerida do Agente
+Sempre que for modificar o `package.json`, certifique-se de que o bloco `"publish"` continue existindo e configurado corretamente para o GitHub do reposit√≥rio.
