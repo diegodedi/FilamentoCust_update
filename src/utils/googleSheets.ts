@@ -218,11 +218,12 @@ export const pushDataToSpreadsheet = async (
 
   // Prepare table rows
   const productsRows = [
-    ["ID Produto", "Nome Produto", "Categoria", "Peso (g)", "Tempo (h)", "Custo Unitário", "Preço de Venda", "Lucro Unitário", "Material ID"],
+    ["ID Produto", "Nome Produto", "Categoria", "Tipo de Material", "Peso (g)", "Tempo (h)", "Custo Unitário", "Preço de Venda", "Lucro Unitário", "Material ID"],
     ...data.products.map(p => [
       p.id,
       p.name,
       p.category,
+      p.materialType || 'PLA',
       p.weight,
       p.printTime,
       p.costPrice,
@@ -444,6 +445,7 @@ export const pullDataFromSpreadsheet = async (
     "ID Produto": "id",
     "Nome Produto": "name",
     "Categoria": "category",
+    "Tipo de Material": "materialType",
     "Peso (g)": "weight",
     "Tempo (h)": "printTime",
     "Custo Unitário": "costPrice",

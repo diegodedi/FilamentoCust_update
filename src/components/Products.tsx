@@ -3,6 +3,9 @@ import { useDb } from '../context/DbContext';
 import { Trash2, X, Plus, Edit, Image as ImageIcon, Upload, RotateCcw } from 'lucide-react';
 import { ProductFilament, Product } from '../types';
 import { MultipartProductModal } from './MultipartProductModal';
+import { ProductCard } from './ProductCard';
+import { MaterialTypeSelect } from './MaterialTypeSelect';
+import { MercadoLivreModal } from './MercadoLivreModal';
 
 const DEFAULT_IMAGES = [
   "https://upload.wikimedia.org/wikipedia/commons/7/7b/3DBenchy_created_using_color_mixing_on_an_FDM_printer.jpg", // 3D Benchy
@@ -19,8 +22,12 @@ export const Products: React.FC = () => {
   const [isMultipartModalOpen, setIsMultipartModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingMultipartProduct, setEditingMultipartProduct] = useState<Product | null>(null);
+  const [mercadoLivreProduct, setMercadoLivreProduct] = useState<Product | null>(null);
+  const [isMercadoLivreOpen, setIsMercadoLivreOpen] = useState(false);
   const [name, setName] = useState('');
+  const [dimensions, setDimensions] = useState('');
   const [category, setCategory] = useState('Instrumento');
+  const [materialType, setMaterialType] = useState('PLA');
   const [printHours, setPrintHours] = useState(5);
   const [printMinutes, setPrintMinutes] = useState(0);
   const [accessoryCost, setAccessoryCost] = useState(0);
@@ -156,7 +163,9 @@ export const Products: React.FC = () => {
   const handleOpenAddModal = () => {
     setEditingId(null);
     setName('');
+    setDimensions('');
     setCategory('Instrumento');
+    setMaterialType('PLA');
     setPrintHours(5);
     setPrintMinutes(0);
     setAccessoryCost(0);
@@ -188,7 +197,9 @@ export const Products: React.FC = () => {
     
     setEditingId(p.id);
     setName(p.name);
+    setDimensions(p.dimensions || '');
     setCategory(p.category);
+    setMaterialType(p.materialType || 'PLA');
     setPrintHours(Math.floor(p.printTime));
     setPrintMinutes(Math.round((p.printTime % 1) * 60));
     setAccessoryCost(p.accessoryCost || 0);
@@ -253,6 +264,7 @@ export const Products: React.FC = () => {
 
     const data = {
       name,
+      dimensions: dimensions.trim() || undefined,
       category,
       printTime: totalPrintTime,
       weight: getTotalWeight(),
@@ -274,6 +286,7 @@ export const Products: React.FC = () => {
       marketplacePriceOverride: marketplacePriceOverride !== null ? marketplacePriceOverride : null,
       profit: parseFloat((currentB2C - currentCost).toFixed(2)),
       materialId: finalFilaments[0]?.materialId || '', // fallback
+      materialType,
       image
     };
 
@@ -314,79 +327,16 @@ export const Products: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((p) => (
-          <div key={p.id} className="bg-[#1C1F24] rounded-xl border border-[#2B2F36] shadow-sm overflow-hidden flex flex-col group relative transition-all hover:shadow-md hover:border-[#0084FF]/30">
-            {/* Image Header */}
-            <div className="aspect-[4/3] bg-[#2B2F36] relative overflow-hidden">
-              {p.image ? (
-                <img src={p.image} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                  <ImageIcon className="w-12 h-12 opacity-20" />
-                </div>
-              )}
-              <div className="absolute top-3 left-3">
-                <span className="px-2.5 py-1 bg-[#1C1F24]/90 backdrop-blur-sm text-slate-200 rounded-full text-[10px] font-bold shadow-sm border border-[#2B2F36]/50">
-                  {p.category}
-                </span>
-              </div>
-              
-              {/* Floating Actions on Hover */}
-              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => handleEdit(p)}
-                  className="p-2 bg-[#1C1F24]/90 hover:bg-[#1C1F24] text-slate-300 rounded-full shadow-sm transition-colors"
-                  title="Editar"
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                </button>
-                <button 
-                  onClick={() => deleteProduct(p.id)}
-                  className="p-2 bg-[#1C1F24]/90 hover:bg-red-50 text-red-500 rounded-full shadow-sm transition-colors"
-                  title="Excluir"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 flex-1 flex flex-col">
-              <h3 className="font-bold text-white text-lg leading-tight mb-4">{p.name}</h3>
-              
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-[#121418] p-2.5 rounded-lg border border-[#2B2F36]">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block mb-0.5">Tempo</span>
-                  <span className="font-mono text-xs text-slate-200 font-medium">
-                    {Math.floor(p.printTime)}h {Math.round((p.printTime % 1) * 60) > 0 ? `${Math.round((p.printTime % 1) * 60)}m` : ''}
-                  </span>
-                </div>
-                <div className="bg-[#121418] p-2.5 rounded-lg border border-[#2B2F36]">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block mb-0.5">Peso</span>
-                  <span className="font-mono text-xs text-slate-200 font-medium">{p.weight}g</span>
-                </div>
-              </div>
-
-              <div className="mt-auto pt-4 border-t border-[#2B2F36] space-y-2">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Custo Total:</span>
-                  <span className="font-mono font-medium text-slate-200">R$ {p.costPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Preço B2B (Mín: {p.b2bMinQty || 10} un):</span>
-                  <span className="font-mono font-bold text-[#0084FF]">R$ {(p.b2bPrice || (p.costPrice * 4)).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-200 font-medium">Preço Sugerido (B2C):</span>
-                  <span className="font-mono font-bold text-[#22C55E]">R$ {(p.b2cPrice || p.sellPrice).toFixed(2)}</span>
-                </div>
-                {p.marketplacePlatform && p.marketplacePlatform !== 'Nenhum' && (
-                  <div className="flex justify-between items-center text-xs mt-1 pt-1 border-t border-[#2B2F36]">
-                    <span className="text-slate-400">Plataforma ({p.marketplacePlatform.split(' ')[0]}):</span>
-                    <span className="font-mono font-bold text-[#F59E0B]">R$ {(p.marketplacePrice || 0).toFixed(2)}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <ProductCard
+            key={p.id}
+            product={p}
+            onEdit={handleEdit}
+            onDelete={deleteProduct}
+            onOpenMercadoLivre={(prod) => {
+              setMercadoLivreProduct(prod);
+              setIsMercadoLivreOpen(true);
+            }}
+          />
         ))}
         {products.length === 0 && (
           <div className="col-span-full py-12 text-center text-slate-400 bg-[#1C1F24] border border-[#2B2F36] border-dashed rounded-xl">
@@ -457,7 +407,7 @@ export const Products: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="space-y-2 lg:col-span-2">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Nome</label>
+                    <label className="font-label-md text-slate-400 text-xs uppercase block">Nome *</label>
                     <input 
                       type="text" 
                       placeholder="ex: Tubo de baixo"
@@ -465,6 +415,20 @@ export const Products: React.FC = () => {
                       onChange={e => setName(e.target.value)}
                       className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2 lg:col-span-2">
+                    <label className="font-label-md text-slate-400 text-xs uppercase block flex justify-between items-center">
+                      <span>Dimensões do Produto</span>
+                      <span className="text-[10px] text-slate-500 font-normal lowercase">ex: 15 x 10 x 8 cm</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      placeholder="Ex: 15 x 10 x 8 cm (A x L x P)"
+                      value={dimensions}
+                      onChange={e => setDimensions(e.target.value)}
+                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
                     />
                   </div>
                   
@@ -512,6 +476,11 @@ export const Products: React.FC = () => {
                       </select>
                     )}
                   </div>
+
+                  <MaterialTypeSelect
+                    value={materialType}
+                    onChange={setMaterialType}
+                  />
 
                   <div className="space-y-2">
                     <label className="font-label-md text-slate-400 text-xs uppercase block">Acessório (R$)</label>
@@ -829,7 +798,24 @@ export const Products: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-3 justify-end pt-4 border-t border-[#2B2F36]">
+                <div className="flex gap-3 justify-end items-center pt-4 border-t border-[#2B2F36]">
+                  {editingId && (
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const prod = products.find(p => p.id === editingId);
+                        if (prod) {
+                          setMercadoLivreProduct(prod);
+                          setIsMercadoLivreOpen(true);
+                        }
+                      }}
+                      className="bg-[#FFE600]/15 hover:bg-[#FFE600]/25 text-[#FFE600] border border-[#FFE600]/30 font-bold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2 mr-auto"
+                      title="Gerar anúncio para o Mercado Livre"
+                    >
+                      <span className="w-4 h-4 rounded bg-[#FFE600] text-slate-950 flex items-center justify-center font-black text-[9px]">ML</span>
+                      <span>Anúncio Mercado Livre</span>
+                    </button>
+                  )}
                   <button 
                     type="button"
                     onClick={cancelEdit}
@@ -857,6 +843,19 @@ export const Products: React.FC = () => {
           setEditingMultipartProduct(null);
         }}
         editingProduct={editingMultipartProduct}
+        onOpenMercadoLivre={(prod) => {
+          setMercadoLivreProduct(prod);
+          setIsMercadoLivreOpen(true);
+        }}
+      />
+
+      <MercadoLivreModal
+        isOpen={isMercadoLivreOpen}
+        onClose={() => {
+          setIsMercadoLivreOpen(false);
+          setMercadoLivreProduct(null);
+        }}
+        product={mercadoLivreProduct}
       />
     </div>
   );

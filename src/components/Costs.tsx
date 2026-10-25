@@ -74,10 +74,12 @@ export const Costs: React.FC = () => {
     }
     
     const isMulti = selectedFilaments.length > 1;
+    const selectedMat = materials.find(m => m.id === selectedFilaments[0]?.id);
 
     addProduct({
       name: calcName,
       category: 'Prototipagem',
+      materialType: selectedMat?.type || 'PLA',
       weight,
       printTime: time,
       materialId: selectedFilaments[0]?.id || '',

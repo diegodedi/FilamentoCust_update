@@ -18,6 +18,8 @@ export interface Product {
   id: string;
   name: string;
   category: string;
+  materialType?: string;
+  dimensions?: string; // Medidas do produto (ex: 15x10x8 cm)
   weight: number; // in grams
   printTime: number; // in hours
   materialId: string;
@@ -151,6 +153,13 @@ export interface Printer {
   monitoringEnabled: boolean;
 }
 
+export interface PrintJobFilament {
+  materialId: string;
+  materialName?: string;
+  plannedWeight: number;
+  consumedWeight: number;
+}
+
 export interface PrintJob {
   id: string;
   printerId: string;
@@ -171,3 +180,4 @@ export interface PrintJob {
   inventoryApplied: boolean;
   createdAt: string;
 }
+

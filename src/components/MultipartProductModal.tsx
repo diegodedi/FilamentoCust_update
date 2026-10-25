@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDb } from '../context/DbContext';
 import { X, Plus, Trash2, Upload, Image as ImageIcon, RotateCcw } from 'lucide-react';
 import { ProductPart, ProductFilament, Product } from '../types';
+import { MaterialTypeSelect } from './MaterialTypeSelect';
 
 interface MultipartProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   editingProduct?: Product | null;
+  onOpenMercadoLivre?: (product: Product) => void;
 }
 
 const DEFAULT_IMAGES = [
@@ -16,11 +18,18 @@ const DEFAULT_IMAGES = [
   "https://upload.wikimedia.org/wikipedia/commons/4/46/Bobina_PLA.jpg"
 ];
 
-export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ isOpen, onClose, editingProduct }) => {
+export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({
+  isOpen,
+  onClose,
+  editingProduct,
+  onOpenMercadoLivre
+}) => {
   const { addProduct, updateProduct, materials, products } = useDb();
 
   const [name, setName] = useState('');
+  const [dimensions, setDimensions] = useState('');
   const [category, setCategory] = useState('Instrumento');
+  const [materialType, setMaterialType] = useState('PLA');
   const [accessoryCost, setAccessoryCost] = useState(0);
   const [image, setImage] = useState(DEFAULT_IMAGES[0]);
   const [parts, setParts] = useState<ProductPart[]>([]);
@@ -57,7 +66,9 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
   useEffect(() => {
     if (editingProduct && editingProduct.isMultipart) {
       setName(editingProduct.name);
+      setDimensions(editingProduct.dimensions || '');
       setCategory(editingProduct.category);
+      setMaterialType(editingProduct.materialType || 'PLA');
       setAccessoryCost(editingProduct.accessoryCost || 0);
       setImage(editingProduct.image || DEFAULT_IMAGES[0]);
       setParts(editingProduct.parts || []);
@@ -72,7 +83,9 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
       setIsCustomCategory(false);
     } else {
       setName('');
+      setDimensions('');
       setCategory('Instrumento');
+      setMaterialType('PLA');
       setAccessoryCost(0);
       setImage(DEFAULT_IMAGES[0]);
       setParts([createEmptyPart()]);
@@ -202,6 +215,7 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
 
     const data: Omit<Product, 'id'> = {
       name,
+      dimensions: dimensions.trim() || undefined,
       category,
       printTime: totalTime,
       weight: totalWeight,
@@ -223,6 +237,7 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
       marketplacePriceOverride: marketplacePriceOverride !== null ? marketplacePriceOverride : null,
       profit: parseFloat((currentB2C - currentCost).toFixed(2)),
       materialId: parts[0]?.materialId || '',
+      materialType,
       image,
       isMultipart: true,
       parts
@@ -291,7 +306,20 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                   className="w-full bg-[#141518] border border-[#2B2F36] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0084FF]"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1 flex justify-between items-center">
+                  <span>Dimensões do Produto</span>
+                  <span className="text-xs text-slate-500 font-normal lowercase">ex: 20 x 15 x 12 cm</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: 20 x 15 x 12 cm (A x L x P)"
+                  value={dimensions}
+                  onChange={e => setDimensions(e.target.value)}
+                  className="w-full bg-[#141518] border border-[#2B2F36] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0084FF]"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Categoria *</label>
                   {isCustomCategory ? (
@@ -336,6 +364,11 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
                     </select>
                   )}
                 </div>
+                <MaterialTypeSelect
+                  value={materialType}
+                  onChange={setMaterialType}
+                  required
+                />
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Custo de Acessórios (R$)</label>
                   <input
@@ -672,7 +705,18 @@ export const MultipartProductModal: React.FC<MultipartProductModalProps> = ({ is
             </div>
           </div>
 
-          <div className="pt-6 border-t border-[#2B2F36] flex justify-end gap-3">
+          <div className="pt-6 border-t border-[#2B2F36] flex justify-end items-center gap-3">
+            {editingProduct && onOpenMercadoLivre && (
+              <button
+                type="button"
+                onClick={() => onOpenMercadoLivre(editingProduct)}
+                className="bg-[#FFE600]/15 hover:bg-[#FFE600]/25 text-[#FFE600] border border-[#FFE600]/30 font-bold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2 mr-auto"
+                title="Gerar anúncio para o Mercado Livre"
+              >
+                <span className="w-4 h-4 rounded bg-[#FFE600] text-slate-950 flex items-center justify-center font-black text-[9px]">ML</span>
+                <span>Anúncio Mercado Livre</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

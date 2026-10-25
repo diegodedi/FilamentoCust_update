@@ -32,11 +32,17 @@ Financeiro              → Cash flow, revenue and expense ledger
 Configurações           → System settings and Google Sheets sync
 
 ## Key Files
-src/context/DbContext.tsx → Central data context, CRUD methods and LocalStorage/Sheets sync
-src/types.ts              → Types for Product, Sale, Customer, FinancialLog, etc.
-package.json              → Dependencies and Electron build scripts
+src/context/DbContext.tsx         → Central data context, CRUD methods and LocalStorage/Sheets sync
+src/types.ts                      → Types for Product, Sale, Customer, FinancialLog, etc.
+src/data/materialTypes.ts         → 3D Printing materials list (PLA, PETG, ABS, TPU, etc.)
+src/components/MaterialTypeSelect.tsx → Dropdown selector for 3D printing materials with custom 'Outro'
+src/components/ProductCard.tsx    → Product card component with material badge, specs, pricing and ML copy button
+src/components/MercadoLivreModal.tsx → Modal generator for Mercado Livre listing with 1-click copy
+src/utils/mercadoLivreTemplate.ts    → SEO title and professional description template engine for Mercado Livre
+printer-bridge/electron.js        → Electron main process, window management and on-demand auto-updater flow
+package.json                      → Dependencies and Electron build scripts
 
 ## Storage Keys (LocalStorage)
 forge_products · forge_inventory · forge_materials · forge_customers · forge_sales · forge_financial · forge_config · 3derp_printers · 3derp_printJobs
 
-## Last updated: 2026-10-21
+## Last updated: 2026-10-25 (v1.0.29 - On-demand Update Confirmation, Dimensions Support & ML Listing Generator)

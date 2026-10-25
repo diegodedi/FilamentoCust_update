@@ -84,6 +84,7 @@ export const initialProducts: Product[] = [
   {
     "name": "Cubo Teste",
     "category": "Teste",
+    "materialType": "PLA",
     "printTime": 0.5,
     "weight": 6,
     "accessoryCost": 0,
@@ -128,6 +129,7 @@ export const initialProducts: Product[] = [
   {
     "name": "Vaso BR sentado padrao",
     "category": "Vasos",
+    "materialType": "PLA",
     "printTime": 1.5833333333333335,
     "weight": 96,
     "accessoryCost": 0,
@@ -159,6 +161,7 @@ export const initialProducts: Product[] = [
   {
     "name": "Partes teste",
     "category": "Instrumento",
+    "materialType": "PLA",
     "printTime": 1,
     "weight": 12,
     "accessoryCost": 0,

@@ -175,7 +175,12 @@ export const DbProvider: React.FC<{ children: React.ReactNode }> = ({ children }
 
     if (localProducts !== null) {
       try {
-        setProducts(JSON.parse(localProducts));
+        const parsed = JSON.parse(localProducts);
+        const migrated = Array.isArray(parsed) ? parsed.map((p: Product) => ({
+          ...p,
+          materialType: p.materialType || 'PLA'
+        })) : initialProducts;
+        setProducts(migrated);
       } catch (e) {
         setProducts(initialProducts);
       }

@@ -14,7 +14,7 @@ interface PrinterContextType {
 const PrinterContext = createContext<PrinterContextType | undefined>(undefined);
 
 export const PrinterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { printers, addPrintJob, updatePrintJob, registerMovement, updateMaterialWeight, products, printJobs } = useDb();
+  const { printers, addPrintJob, updatePrintJob, registerMovement, registerPartMovement, updateMaterialWeight, products, printJobs } = useDb();
   
   const [bridgeOnline, setBridgeOnline] = useState<boolean>(false);
   const [activeStates, setActiveStates] = useState<Record<string, PrinterState>>({});
