@@ -301,31 +301,31 @@ export const Products: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-[#1C1F24] p-6 rounded-xl border border-[#2B2F36] shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
         <div>
           <h2 className="font-headline-md text-white">Catálogo de Produtos</h2>
-          <p className="text-sm text-slate-400 mt-1">Gerencie seu portfólio de impressões 3D</p>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">Gerencie seu portfólio de impressões 3D</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={handleOpenAddModal}
-            className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
+            className="bg-[#FFB800] hover:bg-[#FFA500] text-[#0F1115] font-extrabold py-2.5 px-5 rounded-xl text-sm transition-all shadow-md shadow-amber-500/20 flex items-center gap-2 cursor-pointer"
           >
-            <Plus className="w-4 h-4" /> Novo Produto
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Novo Produto
           </button>
           <button
             onClick={() => {
               setEditingMultipartProduct(null);
               setIsMultipartModalOpen(true);
             }}
-            className="bg-[#6B46C1] hover:bg-[#553C9A] text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
+            className="bg-[#222632] hover:bg-[#2B303E] text-white border border-[#383F50] font-bold py-2.5 px-5 rounded-xl text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Novo Produto Multpartes
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
         {products.map((p) => (
           <ProductCard
             key={p.id}

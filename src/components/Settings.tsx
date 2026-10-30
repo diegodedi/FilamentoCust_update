@@ -204,75 +204,74 @@ export const Settings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="font-headline-md text-white mb-1">Configurações Gerais e Integrações</h2>
-        <p className="text-slate-400 font-body-md font-medium">Ajuste os parâmetros padrão do fatiamento de custos e configure a governança de dados.</p>
+      <div className="bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
+        <h2 className="font-headline-md text-white mb-1">Configurações Gerais & Integrações</h2>
+        <p className="text-slate-400 font-body-md text-xs sm:text-sm font-medium">Ajuste os parâmetros padrão do fatiamento de custos, impressoras 3D e governança de dados.</p>
       </div>
 
-      {/* Sub-Navegação interna de abas */}
-      <div className="flex border-b border-[#2B2F36] gap-1">
+      {/* Sub-Navegação interna de abas estilo segmented control */}
+      <div className="flex border-b border-[#2B303E] gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => setActiveTab('geral')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'geral' 
-              ? 'border-slate-800 text-white font-bold' 
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-[#FFB800] text-[#0F1115] shadow-md shadow-amber-500/20 font-extrabold' 
+              : 'text-slate-400 hover:text-white hover:bg-[#1A1D25]'
           }`}
         >
           <Sliders className="w-4 h-4" /> Parâmetros Operacionais
         </button>
         <button
           onClick={() => setActiveTab('sheets')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'sheets' 
-              ? 'border-slate-800 text-white font-bold' 
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-[#FFB800] text-[#0F1115] shadow-md shadow-amber-500/20 font-extrabold' 
+              : 'text-slate-400 hover:text-white hover:bg-[#1A1D25]'
           }`}
         >
           <Server className="w-4 h-4" /> Integração Google Sheets
         </button>
         <button
           onClick={() => setActiveTab('printers')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'printers' 
-              ? 'border-slate-800 text-white font-bold' 
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-[#FFB800] text-[#0F1115] shadow-md shadow-amber-500/20 font-extrabold' 
+              : 'text-slate-400 hover:text-white hover:bg-[#1A1D25]'
           }`}
         >
           <Printer className="w-4 h-4" /> Impressoras
         </button>
       </div>
 
-
-            {activeTab === 'printers' && (
-        <div className="space-y-6 max-w-4xl">
-          <div className="flex items-center justify-between">
+      {activeTab === 'printers' && (
+        <div className="space-y-6 w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
             <div>
               <div className="flex items-center gap-3">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Printer className="w-5 h-5 text-[#0084FF]" /> Impressoras e Integrações
+                  <Printer className="w-5 h-5 text-[#FFB800]" /> Impressoras e Integrações
                 </h3>
-                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${bridgeOnline ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                  <div className={`w-1.5 h-1.5 rounded-full ${bridgeOnline ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${bridgeOnline ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${bridgeOnline ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
                   BRIDGE {bridgeOnline ? 'ONLINE' : 'OFFLINE'}
                 </div>
               </div>
-              <p className="text-slate-400 text-sm mt-1">
-                {!bridgeOnline ? "Printer Bridge offline. Instruções: execute 'start-bridge.bat' na pasta printer-bridge no seu computador." : "Gerencie as impressoras conectadas ao sistema."}
+              <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                {!bridgeOnline ? "Printer Bridge offline. Execute 'start-bridge.bat' na pasta printer-bridge no seu computador." : "Gerencie as impressoras conectadas ao sistema."}
               </p>
             </div>
             <button
               onClick={() => handleOpenPrinterModal()}
-              className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
+              className="bg-[#FFB800] hover:bg-[#FFA500] text-[#0F1115] font-extrabold py-2.5 px-5 rounded-xl text-sm transition-all shadow-md shadow-amber-500/20 flex items-center gap-2 cursor-pointer"
             >
-              <Plus className="w-4 h-4" /> Nova Impressora
+              <Plus className="w-4 h-4 stroke-[2.5]" /> Nova Impressora
             </button>
           </div>
           
-          <div className="bg-[#1C1F24] rounded-xl border border-[#2B2F36] overflow-hidden">
+          <div className="bg-[#1A1D25] rounded-2xl border border-[#2B303E] overflow-hidden">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-[#121418] border-b border-[#2B2F36] text-xs font-bold text-slate-400 uppercase">
+                <tr className="bg-[#14171E] border-b border-[#2B303E] text-xs font-bold text-slate-400 uppercase">
                   <th className="p-4">Nome</th>
                   <th className="p-4">IP / Porta</th>
                   <th className="p-4">Monitoramento</th>

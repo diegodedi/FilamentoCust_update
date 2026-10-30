@@ -2,13 +2,28 @@
 
 ## Stack
 - Frontend: React 19, TypeScript, Vite, Tailwind CSS 4, Lucide React
+- Theme / UI: Luxury Matte Stealth Graphite + Amber Gold Palette (`#FFB800` / `#FF5E3A` / `#1A1D25`)
 - Desktop: Electron 44, Electron Builder
 - Sync/Storage: LocalStorage, Google Sheets API (GAS / Direct API), Firebase Auth
 - Background Service: Printer Bridge (Express, OctoPrint/Moonraker API)
 
 ## Folder Structure
 src/
-  components/           → UI views (Sales, Customers, Finance, Products, Inventory, etc.)
+  components/
+    dashboard/          → Dashboard subcomponents (DashboardMetrics, DashboardCharts, DashboardAlertsAndTop)
+    finance/            → Finance subcomponents (FinanceMetrics, FinanceLedgerTable, FinanceModal)
+    costs/              → Costs subcomponents (CostsParameters, CostsSummary)
+    sales/              → Sales subcomponents (SalesMetrics, SalesTable, SalesModal)
+    inventory/          → Inventory subcomponents (InventoryMetrics, InventoryTable, InventoryExtras)
+    ProductCard.tsx     → Modernized card with amber badge, specs, pricing and ML copy button
+    Customers.tsx       → CRM customer contacts with loyalty badges (Ouro, Prata, Bronze)
+    Supplies.tsx        → Supplies & packaging inventory cards
+    Products.tsx        → Product catalog with responsive grid
+    Materials.tsx       → Spool and filament management
+    Production.tsx      → 3D Printer queue and live status
+    Thermometer.tsx     → Thermal and pricing simulation view
+    ProductSearch.tsx   → Market research and product price checker
+    Settings.tsx        → System settings and Google Sheets sync
   context/              → DbContext (data persistence & sync), PrinterContext
   data/                 → Initial/demo data (initialData.ts)
   services/             → Printer integration and communication services
@@ -33,16 +48,13 @@ Configurações           → System settings and Google Sheets sync
 
 ## Key Files
 src/context/DbContext.tsx         → Central data context, CRUD methods and LocalStorage/Sheets sync
-src/types.ts                      → Types for Product, Sale, Customer, FinancialLog, etc.
-src/data/materialTypes.ts         → 3D Printing materials list (PLA, PETG, ABS, TPU, etc.)
-src/components/MaterialTypeSelect.tsx → Dropdown selector for 3D printing materials with custom 'Outro'
+src/index.css                     → Design tokens, brand colors, custom dark scrollbar & theme utilities
+src/App.tsx                       → Responsive layout, mobile drawer, top navbar, wide container
 src/components/ProductCard.tsx    → Product card component with material badge, specs, pricing and ML copy button
-src/components/MercadoLivreModal.tsx → Modal generator for Mercado Livre listing with 1-click copy
-src/utils/mercadoLivreTemplate.ts    → SEO title and professional description template engine for Mercado Livre
 printer-bridge/electron.js        → Electron main process, window management and on-demand auto-updater flow
 package.json                      → Dependencies and Electron build scripts
 
 ## Storage Keys (LocalStorage)
 forge_products · forge_inventory · forge_materials · forge_customers · forge_sales · forge_financial · forge_config · 3derp_printers · 3derp_printJobs
 
-## Last updated: 2026-10-25 (v1.0.29 - On-demand Update Confirmation, Dimensions Support & ML Listing Generator)
+## Last updated: 2026-10-30 (v1.0.30 - UI Redesign: Dark Matte & Amber Gold Theme, Fluid Responsive Layout, Space Optimization)

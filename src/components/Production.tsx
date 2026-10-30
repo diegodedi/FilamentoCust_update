@@ -113,27 +113,27 @@ export const Production: React.FC = () => {
 
   return (
     <div className="space-y-6">
-                  <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-              <Printer className="w-8 h-8 text-[#0084FF]" />
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
+              <Printer className="w-7 h-7 text-[#FFB800]" />
               Monitoramento e Produção
             </h1>
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${bridgeOnline ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${bridgeOnline ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border ${bridgeOnline ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${bridgeOnline ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
               BRIDGE {bridgeOnline ? 'ONLINE' : 'OFFLINE'}
             </div>
           </div>
-          <p className="text-slate-400 mt-1">
+          <p className="text-slate-400 text-xs sm:text-sm mt-1">
             Acompanhe suas impressoras e histórico de jobs em tempo real.
           </p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-[#0084FF] hover:bg-[#0084FF]/90 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors"
+          className="flex items-center justify-center gap-2 bg-[#FFB800] hover:bg-[#FFA500] text-[#0F1115] font-extrabold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-amber-500/20 cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 stroke-[2.5]" />
           Adicionar Impressora
         </button>
       </header>
@@ -187,13 +187,13 @@ export const Production: React.FC = () => {
         </h2>
         
         {printers.length === 0 ? (
-          <div className="bg-[#1C1F24] rounded-2xl p-8 border border-[#2B2F36] text-center">
-            <Printer className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-400 font-medium">Nenhuma impressora configurada.</p>
+          <div className="bg-[#1A1D25] rounded-2xl p-8 border border-[#2B303E] text-center">
+            <Printer className="w-12 h-12 text-[#FFB800] mx-auto mb-3" />
+            <p className="text-white font-medium">Nenhuma impressora configurada.</p>
             <p className="text-slate-400 text-sm mt-1">Acesse as Configurações para adicionar uma impressora.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
             {printers.map(printer => {
               const state = activeStates[printer.id] || { 
                 status: printer.monitoringEnabled ? 'OFFLINE' : 'IDLE', 
@@ -220,8 +220,8 @@ export const Production: React.FC = () => {
                 statusBg = 'bg-slate-500/10 border-slate-500/20';
               } else if (isPrinting) {
                 statusText = 'IMPRIMINDO';
-                statusColor = 'text-[#0084FF]';
-                statusBg = 'bg-[#0084FF]/10 border-[#0084FF]/20';
+                statusColor = 'text-[#FFB800]';
+                statusBg = 'bg-[#FFB800]/10 border-[#FFB800]/20';
               } else if (state.status === 'PAUSED') {
                 statusText = 'PAUSADA';
                 statusColor = 'text-amber-500';
@@ -237,11 +237,11 @@ export const Production: React.FC = () => {
               }
 
               return (
-                <div key={printer.id} className="bg-[#1C1F24] rounded-2xl shadow-sm border border-[#2B2F36] p-6 flex flex-col relative overflow-hidden">
+                <div key={printer.id} className="bg-[#1A1D25] rounded-2xl shadow-sm border border-[#2B303E] hover:border-[#FFB800]/40 transition-all p-6 flex flex-col relative overflow-hidden">
                   {/* Progress Bar Background */}
                   {isPrinting && (
                     <div 
-                      className="absolute bottom-0 left-0 h-1 bg-[#0084FF] transition-all duration-1000 ease-linear"
+                      className="absolute bottom-0 left-0 h-1.5 bg-[#FFB800] transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(255,184,0,0.5)]"
                       style={{ width: `${(state.progress * 100)}%` }}
                     />
                   )}

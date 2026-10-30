@@ -303,13 +303,13 @@ export function ProductSearch() {
       </div>
 
       {/* Header & Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <TrendingUp className="text-[#0084FF] w-6 h-6" />
-            Pesquisa de Produtos
+            <TrendingUp className="text-[#FFB800] w-6 h-6 stroke-[2.5]" />
+            Pesquisa de Produtos & Tendências
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Descubra os top 10 itens de impressão 3D mais buscados nos marketplaces.
           </p>
         </div>
@@ -317,15 +317,15 @@ export function ProductSearch() {
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           {/* Seletor de Marketplace */}
           <div className="relative flex-1 lg:flex-none min-w-[200px]">
-            <label className="text-[10px] uppercase font-bold text-slate-500 absolute -top-2 left-3 bg-[#121418] px-1 z-10">
+            <label className="text-[10px] uppercase font-bold text-slate-400 absolute -top-2 left-3 bg-[#11141A] px-1 z-10 rounded">
               Marketplace
             </label>
             <div className="relative">
-              <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Store className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="w-full bg-[#1C1F24] border border-[#2B2F36] text-white text-sm rounded-lg pl-10 pr-10 py-2.5 focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF] outline-none appearance-none transition-all"
+                className="w-full bg-[#11141A] border border-[#2B303E] text-white text-sm rounded-xl pl-10 pr-10 py-2.5 focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] outline-none appearance-none transition-all"
               >
                 {PLATFORMS.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -336,15 +336,15 @@ export function ProductSearch() {
 
           {/* Seletor de Período */}
           <div className="relative flex-1 lg:flex-none min-w-[160px]">
-            <label className="text-[10px] uppercase font-bold text-slate-500 absolute -top-2 left-3 bg-[#121418] px-1 z-10">
+            <label className="text-[10px] uppercase font-bold text-slate-400 absolute -top-2 left-3 bg-[#11141A] px-1 z-10 rounded">
               Período
             </label>
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <select
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
-                className="w-full bg-[#1C1F24] border border-[#2B2F36] text-white text-sm rounded-lg pl-10 pr-10 py-2.5 focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF] outline-none appearance-none transition-all"
+                className="w-full bg-[#11141A] border border-[#2B303E] text-white text-sm rounded-xl pl-10 pr-10 py-2.5 focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] outline-none appearance-none transition-all"
               >
                 {PERIODS.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -356,33 +356,33 @@ export function ProductSearch() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl p-5 flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl p-5 flex items-center justify-between hover:border-[#FFB800]/40 transition-all">
           <div>
             <p className="text-xs text-slate-400 font-semibold mb-1">Volume Estimado (Top 10)</p>
-            <h3 className="text-2xl font-bold text-white">{totalVolume.toLocaleString('pt-BR')} unid.</h3>
+            <h3 className="text-2xl font-bold text-[#FFB800] font-mono">{totalVolume.toLocaleString('pt-BR')} unid.</h3>
           </div>
-          <div className="p-3 bg-blue-500/10 text-[#0084FF] rounded-lg">
+          <div className="p-3 bg-[#FFB800]/15 text-[#FFB800] rounded-xl border border-[#FFB800]/30">
             <Package className="w-6 h-6" />
           </div>
         </div>
-        <div className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl p-5 flex items-center justify-between">
+        <div className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl p-5 flex items-center justify-between hover:border-[#FFB800]/40 transition-all">
           <div>
             <p className="text-xs text-slate-400 font-semibold mb-1">Marketplace Ativo</p>
             <h3 className="text-lg font-bold text-white">
               {PLATFORMS.find(p => p.id === platform)?.name}
             </h3>
           </div>
-          <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-lg">
+          <div className="p-3 bg-[#10B981]/15 text-[#10B981] rounded-xl border border-[#10B981]/30">
             <ShoppingCart className="w-6 h-6" />
           </div>
         </div>
-        <div className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl p-5 flex items-center justify-between">
+        <div className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl p-5 flex items-center justify-between hover:border-[#10B981]/40 transition-all sm:col-span-2 md:col-span-1">
           <div>
             <p className="text-xs text-slate-400 font-semibold mb-1">Status do Motor de Busca</p>
-            <h3 className="text-lg font-bold text-emerald-500">Ao Vivo (Simulação)</h3>
+            <h3 className="text-lg font-bold text-[#10B981]">Ao Vivo (Simulação)</h3>
           </div>
-          <div className="p-3 bg-purple-500/10 text-purple-500 rounded-lg">
+          <div className="p-3 bg-[#10B981]/15 text-[#10B981] rounded-xl border border-[#10B981]/30">
             <DollarSign className="w-6 h-6" />
           </div>
         </div>

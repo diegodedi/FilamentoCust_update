@@ -21,7 +21,9 @@ if (!gotTheLock) {
     const win = new BrowserWindow({
       width: 1200,
       height: 800,
-      show: false,
+      center: true,
+      title: 'Filamento Cust',
+      show: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
@@ -32,6 +34,13 @@ if (!gotTheLock) {
       win.show();
       win.focus();
     });
+
+    setTimeout(() => {
+      if (!win.isDestroyed() && !win.isVisible()) {
+        win.show();
+        win.focus();
+      }
+    }, 500);
 
     // Make external links open in default browser (Chrome), but allow Firebase/Google Auth popups
     win.webContents.setWindowOpenHandler(({ url }) => {
@@ -101,8 +110,8 @@ if (!gotTheLock) {
       console.error('Erro ao iniciar verificação de atualizações:', err);
     }
 
-    // Cria um ícone vazio por padrão se não tiver imagem (apenas para fallback)
-    let icon = nativeImage.createEmpty();
+    // Cria um ícone válido 16x16 em base64 PNG para o Tray do Windows não falhar
+    let icon = nativeImage.createFromDataURL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMklEQVR42mP8z8AARAwMDGoM+DEjI6Mao5rBqIZRA0bBwGQA438GBgYF/8n1x6gBo2AAAK4iEAWz2wJDAAAAAElFTkSuQmCC');
     
     tray = new Tray(icon);
     tray.setToolTip('Filamento Cust - Monitorando...');

@@ -68,41 +68,41 @@ export const Customers: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
         <div>
-          <h2 className="font-headline-md text-white mb-1">Painel CRM e Clientes</h2>
-          <p className="text-slate-400 font-body-md">Gerencie a carteira de contatos comerciais, classificações de fidelidade e faturamentos corporativos.</p>
+          <h2 className="font-headline-md text-white mb-1">Painel CRM & Clientes</h2>
+          <p className="text-slate-400 font-body-md text-xs sm:text-sm">Gerencie a carteira de contatos comerciais, categorias de fidelidade e clientes corporativos.</p>
         </div>
         <button 
           onClick={handleOpenAddModal}
-          className="bg-[#0084FF] text-white px-5 py-2.5 rounded-lg font-label-md hover:bg-[#0084FF]/90 flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+          className="bg-[#FFB800] hover:bg-[#FFA500] text-[#0F1115] px-5 py-2.5 rounded-xl font-label-md flex items-center gap-2 shadow-md shadow-amber-500/20 font-extrabold transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" /> Novo Cliente
+          <Plus className="w-4 h-4 stroke-[2.5]" /> Novo Cliente
         </button>
       </div>
 
       {/* Busca e Filtros */}
-      <div className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input 
             type="text" 
             placeholder="Pesquisar por nome, empresa ou e-mail..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-[#2B2F36] rounded-lg text-slate-200 bg-[#121418] outline-none focus:ring-2 focus:ring-[#0084FF]/50 text-xs"
+            className="w-full pl-10 pr-4 py-2 border border-[#2B303E] rounded-xl text-slate-200 bg-[#11141A] outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] text-xs transition-colors"
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           {categories.map((cat, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-xs font-medium border cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 selectedCategory === cat 
-                  ? 'bg-slate-900 border-slate-900 text-white font-bold' 
-                  : 'bg-[#1C1F24] border-[#2B2F36] text-slate-400 hover:bg-[#121418]'
+                  ? 'bg-[#FFB800] text-[#0F1115] shadow-md shadow-amber-500/25 border border-transparent' 
+                  : 'bg-[#11141A] border border-[#2B303E] text-slate-400 hover:text-white'
               }`}
             >
               {cat === 'Todas' ? 'Categoria: Todas' : `Categoria: ${cat}`}
@@ -112,16 +112,16 @@ export const Customers: React.FC = () => {
       </div>
 
       {/* Grid de Contatos / Clientes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
         {filteredCustomers.map((cust) => {
           const badgeColor = cust.category === 'Ouro' 
-            ? 'bg-yellow-100 text-yellow-800 border-yellow-200' 
+            ? 'bg-[#FFB800]/20 text-[#FFB800] border-[#FFB800]/40' 
             : cust.category === 'Prata' 
-            ? 'bg-[#2B2F36] text-white border-[#2B2F36]' 
-            : 'bg-amber-100 text-amber-900 border-amber-200';
+            ? 'bg-slate-700/40 text-slate-200 border-slate-600' 
+            : 'bg-[#FF5E3A]/20 text-[#FF5E3A] border-[#FF5E3A]/40';
 
           return (
-            <div key={cust.id} className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between min-h-[220px]">
+            <div key={cust.id} className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl p-5 shadow-sm hover:border-[#FFB800]/50 hover:shadow-xl transition-all flex flex-col justify-between min-h-[220px]">
               <div>
                 <div className="flex justify-between items-start gap-2 mb-3">
                   <div>

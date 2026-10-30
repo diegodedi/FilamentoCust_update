@@ -6,11 +6,18 @@
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
   
-  /* Brand visual overrides */
-  --color-primary-container: #1E293B; /* Dark Slate Blue for sidebar */
+  /* Brand visual palette (Inspired by Dark Matte & Amber Gold Theme) */
+  --color-brand-amber: #FFB800;
+  --color-brand-amber-hover: #FFA000;
+  --color-brand-coral: #FF5E3A;
+  --color-brand-surface: #1B1E26;
+  --color-brand-surface-elevated: #232733;
+  --color-brand-bg: #0F1115;
+  --color-brand-border: #2B303E;
+  --color-brand-border-subtle: #20242E;
 }
 
-/* Custom visual helper classes */
+/* Base resets & typography classes */
 .font-headline-lg {
   font-family: var(--font-display);
   font-weight: 700;
@@ -21,17 +28,17 @@
 
 .font-headline-md {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.5rem; /* 24px */
-  line-height: 2rem;
+  font-weight: 700;
+  font-size: 1.375rem; /* 22px */
+  line-height: 1.875rem;
   letter-spacing: -0.015em;
 }
 
 .font-headline-sm {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.125rem; /* 18px */
-  line-height: 1.75rem;
+  font-size: 1.05rem; /* 17px */
+  line-height: 1.5rem;
   letter-spacing: -0.01em;
 }
 
@@ -44,19 +51,56 @@
 
 .font-label-md {
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.75rem; /* 12px */
   line-height: 1rem;
 }
 
-.bg-slate-850 {
-  background-color: #1a2333;
+/* Custom visual components & card elevations */
+.card-surface {
+  background-color: #1A1D25;
+  border: 1px solid #2B303E;
+  border-radius: 1rem;
 }
 
+.card-surface-elevated {
+  background-color: #222632;
+  border: 1px solid #33394A;
+  border-radius: 1rem;
+}
+
+.glow-amber {
+  box-shadow: 0 0 25px -4px rgba(255, 184, 0, 0.22);
+}
+
+.glow-coral {
+  box-shadow: 0 0 25px -4px rgba(255, 94, 58, 0.22);
+}
+
+/* Global scrollbar styling for sleek dark look */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #11141A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2C3241;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFB800;
+}
 
 body {
-  background-color: #121418;
-  color: #f1f5f9;
+  background-color: #0F1115;
+  color: #F8FAFC;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 /* Fix for Electron text selection and input focus issues */

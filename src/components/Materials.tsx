@@ -195,43 +195,43 @@ export const Materials: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#1A1D25] p-5 sm:p-6 rounded-2xl border border-[#2B303E] shadow-sm">
         <div>
-          <h2 className="font-headline-md text-white mb-1">Controle de Insumos e Materiais</h2>
-          <p className="text-slate-400 font-body-md">Gerencie os filamentos, cores disponíveis e custos de aquisição por grama.</p>
+          <h2 className="font-headline-md text-white mb-1">Controle de Insumos & Filamentos</h2>
+          <p className="text-slate-400 font-body-md text-xs sm:text-sm">Gerencie os carretéis, cores disponíveis e custos de aquisição por grama.</p>
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2.5 w-full sm:w-auto">
           <button 
             onClick={() => alert('Relatório de compras e consumo exportado como CSV!')}
-            className="px-4 py-2 bg-[#1C1F24] border border-[#2B2F36] text-slate-300 rounded-lg font-label-md text-xs hover:bg-[#121418] flex items-center gap-1.5 cursor-pointer shadow-sm"
+            className="px-4 py-2.5 bg-[#11141A] border border-[#2B303E] text-slate-300 hover:text-white rounded-xl font-label-md text-xs hover:bg-[#1B1E26] flex items-center gap-1.5 cursor-pointer shadow-sm transition-colors"
           >
             <FileDown className="w-4 h-4" /> Exportar CSV
           </button>
           <button 
             onClick={() => setIsSellerModalOpen(true)}
-            className="px-4 py-2 bg-[#1C1F24] border border-[#2B2F36] text-[#0084FF] rounded-lg font-label-md text-xs hover:bg-[#121418] flex items-center gap-1.5 cursor-pointer shadow-sm"
+            className="px-4 py-2.5 bg-[#222632] border border-[#383F50] text-slate-200 hover:text-white rounded-xl font-label-md text-xs hover:bg-[#2B303E] flex items-center gap-1.5 cursor-pointer shadow-sm transition-colors"
           >
             <Plus className="w-4 h-4" /> Registrar Vendedor
           </button>
           <button 
             onClick={handleOpenAddModal}
-            className="px-4 py-2 bg-[#0084FF] text-white rounded-lg font-label-md text-xs hover:bg-[#0084FF]/90 flex items-center gap-1.5 cursor-pointer shadow-sm"
+            className="px-5 py-2.5 bg-[#FFB800] hover:bg-[#FFA500] text-[#0F1115] font-extrabold rounded-xl font-label-md text-xs flex items-center gap-1.5 cursor-pointer shadow-md shadow-amber-500/20 transition-all"
           >
-            <Plus className="w-4 h-4" /> Registrar Rolo
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Registrar Rolo
           </button>
         </div>
       </div>
 
       {/* Busca e Barra de Ferramentas */}
-      <div className="bg-[#1C1F24] border border-[#2B2F36] p-4 rounded-xl shadow-sm">
+      <div className="bg-[#1A1D25] border border-[#2B303E] p-4 rounded-2xl shadow-sm">
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input 
             type="text" 
             placeholder="Pesquisar por nome, cor ou marca do filamento..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-[#2B2F36] rounded-lg text-slate-200 bg-[#121418] outline-none focus:ring-2 focus:ring-[#0084FF]/50 text-xs"
+            className="w-full pl-10 pr-4 py-2 border border-[#2B303E] rounded-xl text-slate-200 bg-[#11141A] outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800] text-xs transition-colors"
           />
         </div>
       </div>
@@ -240,13 +240,13 @@ export const Materials: React.FC = () => {
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1 space-y-6">
           {/* Grid de Filamentos / Bobinas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
         {filteredMaterials.map((mat) => {
           const remainingPercent = Math.min(100, Math.round((mat.currentWeight / mat.initialWeight) * 100));
           const isLow = mat.currentWeight <= 250;
 
           return (
-            <div key={mat.id} className="bg-[#1C1F24] border border-[#2B2F36] rounded-xl overflow-hidden hover:shadow-md transition-all group flex flex-col justify-between">
+            <div key={mat.id} className="bg-[#1A1D25] border border-[#2B303E] rounded-2xl overflow-hidden hover:border-[#FFB800]/50 hover:shadow-xl transition-all group flex flex-col justify-between">
               {/* Spool Image Frame */}
               <div className="h-36 relative overflow-hidden bg-[#1C1F24] border-b border-[#2B2F36] flex-shrink-0 group">
                 <div 

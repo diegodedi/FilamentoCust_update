@@ -202,48 +202,48 @@ export const Thermometer: React.FC = () => {
   const printersNeeded = Math.ceil(targetIncome / (totalMonthlyProfit / numPrinters || 1));
 
   return (
-    <div className="flex h-[calc(100vh-120px)] bg-[#1C1F24] rounded-xl overflow-hidden shadow-sm border border-[#2B2F36] font-sans text-slate-200">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-140px)] bg-[#1A1D25] rounded-2xl overflow-hidden shadow-sm border border-[#2B303E] font-sans text-slate-200">
       {/* LEFT SIDEBAR */}
-      <div className="w-72 bg-[#121418] border-r border-[#2B2F36] flex flex-col h-full overflow-y-auto">
+      <div className="w-full lg:w-72 bg-[#11141A] border-b lg:border-b-0 lg:border-r border-[#2B303E] flex flex-col h-full overflow-y-auto">
         
         {/* JORNADA DE TRABALHO */}
-        <div className="p-5 border-b border-[#2B2F36]">
+        <div className="p-5 border-b border-[#2B303E]">
           <h3 className="font-label-md text-slate-400 text-xs uppercase mb-4 tracking-wider">Jornada de Trabalho</h3>
           
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-xs mb-2">
                 <span className="text-slate-400 font-medium">Horas por dia</span>
-                <span className="text-[#0084FF] font-bold">{hoursPerDay}h</span>
+                <span className="text-[#FFB800] font-bold">{hoursPerDay}h</span>
               </div>
-              <input type="range" min="1" max="24" value={hoursPerDay} onChange={e => setHoursPerDay(Number(e.target.value))} className="w-full h-1.5 bg-[#3A3F47] rounded-lg appearance-none cursor-pointer accent-[#0084FF]" />
+              <input type="range" min="1" max="24" value={hoursPerDay} onChange={e => setHoursPerDay(Number(e.target.value))} className="w-full h-1.5 bg-[#2B303E] rounded-lg appearance-none cursor-pointer accent-[#FFB800]" />
             </div>
             
             <div>
               <div className="flex justify-between text-xs mb-2">
                 <span className="text-slate-400 font-medium">Dias por semana</span>
-                <span className="text-[#0084FF] font-bold">{daysPerWeek}d</span>
+                <span className="text-[#FFB800] font-bold">{daysPerWeek}d</span>
               </div>
-              <input type="range" min="1" max="7" value={daysPerWeek} onChange={e => setDaysPerWeek(Number(e.target.value))} className="w-full h-1.5 bg-[#3A3F47] rounded-lg appearance-none cursor-pointer accent-[#0084FF]" />
+              <input type="range" min="1" max="7" value={daysPerWeek} onChange={e => setDaysPerWeek(Number(e.target.value))} className="w-full h-1.5 bg-[#2B303E] rounded-lg appearance-none cursor-pointer accent-[#FFB800]" />
             </div>
             
             <div>
               <div className="flex justify-between text-xs mb-2">
                 <span className="text-slate-400 font-medium">Número de Impressoras</span>
-                <span className="text-[#0084FF] font-bold">{numPrinters}</span>
+                <span className="text-[#FFB800] font-bold">{numPrinters}</span>
               </div>
-              <input type="range" min="1" max="10" value={numPrinters} onChange={e => setNumPrinters(Number(e.target.value))} className="w-full h-1.5 bg-[#3A3F47] rounded-lg appearance-none cursor-pointer accent-[#0084FF]" />
+              <input type="range" min="1" max="10" value={numPrinters} onChange={e => setNumPrinters(Number(e.target.value))} className="w-full h-1.5 bg-[#2B303E] rounded-lg appearance-none cursor-pointer accent-[#FFB800]" />
             </div>
           </div>
         </div>
 
         {/* IMPRESSORAS */}
-        <div className="p-5 border-b border-[#2B2F36]">
+        <div className="p-5 border-b border-[#2B303E]">
           <h3 className="font-label-md text-slate-400 text-xs uppercase mb-4 tracking-wider">Impressoras</h3>
           <div className="space-y-2">
             {printers.map((p, idx) => (
               <div key={p.id} className="flex items-center gap-3">
-                <span className="text-[#0084FF] text-xs font-bold w-4">{idx + 1}</span>
+                <span className="text-[#FFB800] text-xs font-bold w-4">{idx + 1}</span>
                 <input 
                   type="text" 
                   value={p.name}
@@ -252,7 +252,7 @@ export const Thermometer: React.FC = () => {
                     np[idx].name = e.target.value;
                     setPrinters(np);
                   }}
-                  className="bg-[#1C1F24] border border-[#2B2F36] text-sm text-slate-200 px-3 py-1.5 rounded w-full outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
+                  className="bg-[#1A1D25] border border-[#2B303E] text-sm text-slate-200 px-3 py-1.5 rounded-xl w-full outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800]"
                 />
               </div>
             ))}
