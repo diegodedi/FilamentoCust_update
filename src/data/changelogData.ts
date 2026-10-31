@@ -6,24 +6,23 @@ export const CHANGELOG_DATA: ChangelogRelease[] = [
   {
     version: '1.0.32',
     date: '31/10/2026',
-    title: 'Refatoração Modular Completa & Central de Ajuda In-App',
+    title: 'Central de Ajuda Integrada & Guia Prático da Oficina 3D',
     isCurrent: true,
     highlights: [
-      'Central de Ajuda e Manual Interativo integrado com guias passo a passo, busca rápida e exemplos reais',
-      'Sistema de controle de versões com exibição automática de novidades (What\'s New) pós-atualização',
-      'Refatoração modular do módulo de Filamentos (Materials) em componentes atômicos desacoplados',
-      'Refatoração modular do Termômetro 3D com novo layout de métricas e controle de ocupação de mesa',
-      'Refatoração da Fila de Produção com monitoramento de impressoras e histórico otimizado',
-      'Desacoplamento e componentização do módulo de Pesquisa de Mercado (ProductSearch)'
+      'Nova Central de Ajuda integrada com tutoriais, regras de negócio e simuladores de cálculo real',
+      'Aviso automático de novidades (O Que Há de Novo) ao abrir o aplicativo após cada atualização',
+      'Novo botão de acesso rápido à Ajuda na barra superior e no menu lateral com indicador visual',
+      'Painel de Filamentos aprimorado com indicador de baixo estoque e cálculo por unidade de 1000g',
+      'Visualização do Termômetro 3D otimizada para monitorar capacidade de máquinas e meta mensal'
     ],
     changes: [
-      { type: 'new', description: 'Central de Ajuda e Manual de Boas Práticas com simuladores de custo real' },
-      { type: 'new', description: 'Modal WhatsNew para anunciar melhorias e novidades a cada nova versão' },
-      { type: 'improvement', description: 'Modularização atômica de Filamentos: MaterialCard, MaterialModal, MaterialBrandSelector, MaterialPricingWeightSection e MaterialSellerSidebar' },
-      { type: 'improvement', description: 'Modularização do Termômetro 3D: ThermometerSidebar, ThermometerModelCard e ThermometerBottomMetrics' },
-      { type: 'improvement', description: 'Modularização da Produção: PrinterCard, PrintJobsHistoryTable e AddPrinterModal' },
-      { type: 'improvement', description: 'Desacoplamento do catálogo de pesquisa de mercado em marketSearchData.ts e MarketProductCard' },
-      { type: 'improvement', description: 'Harmonização visual completa na paleta Luxury Matte Stealth Graphite + Dourado Âmbar (#FFB800)' }
+      { type: 'new', description: 'Central de Ajuda e Manual Interativo com busca instantânea e guias de impressão 3D, precificação e e-commerce' },
+      { type: 'new', description: 'Janela de novidades com resumo dos recursos implementados a cada nova versão' },
+      { type: 'improvement', description: 'Visualização mais rápida e limpa do catálogo de filamentos com histórico de compras por vendedor' },
+      { type: 'improvement', description: 'Simulador de metas no Termômetro 3D com controle de horas e ocupação de mesa' },
+      { type: 'improvement', description: 'Monitoramento da fila de impressoras 3D com histórico de consumo de plástico por trabalho' },
+      { type: 'improvement', description: 'Interface mais fluida e responsiva para telas de computador e monitores ultrawide' },
+      { type: 'improvement', description: 'Design escuro com paleta âmbar dourada refinada em todas as telas' }
     ]
   },
   {
@@ -38,6 +37,7 @@ export const CHANGELOG_DATA: ChangelogRelease[] = [
     changes: [
       { type: 'new', description: 'Hub de Mercado Livre com seletor de embalagem e sugestão de kit promocional' },
       { type: 'improvement', description: 'Cálculo de margem líquida B2C e B2B considerando custos fixos e taxas reais' },
+      { type: 'improvement', description: 'Interface mais rápida e navegação fluida em telas de qualquer resolução' },
       { type: 'fix', description: 'Ajuste no recálculo automático de peso ao alternar caixas de envio' }
     ]
   },
@@ -98,4 +98,3 @@ export const CHANGELOG_DATA: ChangelogRelease[] = [
     ]
   }
 ];
-

@@ -39,6 +39,7 @@ src/
   utils/                → Google Sheets sync, GAS code generator, ML template & ML pricing/shipping calculators
   types/                → TypeScript domain interfaces and types (help.ts, types.ts)
 printer-bridge/         → Local node service for 3D printer communication
+.agents/rules/          → Critical operational rules (compile-github-rule, electron-updater-rule, help-user-facing-rule)
 
 ## Routes / Views
 Painel Central          → Central dashboard & operational metrics
@@ -64,12 +65,13 @@ src/components/layout/AppNavbar.tsx → Sticky top navbar with status indicator 
 src/components/help/HelpCenterModal.tsx → Interactive documentation and knowledge base modal
 src/components/help/WhatsNewModal.tsx → Automatic update announcement modal (What's New)
 src/data/documentationData.ts     → Comprehensive 3D printing guides and practical calculation examples
-src/data/changelogData.ts         → Structured release history and version notes (v1.0.32)
+src/data/changelogData.ts         → Structured release history and version notes (v1.0.32 - User Facing)
 src/utils/mercadoLivrePricing.ts  → Pure calculation engine for ML fees, R$79 shipping, kits and lead time
+.agents/rules/help-user-facing-rule.md → Mandatory rule: Help and Changelog are strictly user-facing (no refactoring/tech notes)
 printer-bridge/electron.js        → Electron main process, window management and on-demand auto-updater flow
 package.json                      → Dependencies and Electron build scripts
 
 ## Storage Keys (LocalStorage)
 forge_products · forge_inventory · forge_materials · forge_customers · forge_sales · forge_financial · forge_config · forge_last_seen_version · 3derp_printers · 3derp_printJobs · @filamento/thermometer
 
-## Last updated: 2026-10-31 (v1.0.32 - Refatoração Modular Completa, Central de Ajuda & Manual Interativo, Controle de Versões e Pop-up WhatsNew)
+## Last updated: 2026-10-31 (v1.0.32 - Central de Ajuda & Changelog 100% User-Facing, Regra de Não-Exposição Técnica)
