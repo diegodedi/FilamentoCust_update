@@ -108,3 +108,4 @@ export const MaterialPricingWeightSection: React.FC<MaterialPricingWeightSection
     </div>
   );
 };
+

@@ -193,3 +193,4 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
     </div>
   );
 };
+

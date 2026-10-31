@@ -79,3 +79,4 @@ export const ThermometerBottomMetrics: React.FC<ThermometerBottomMetricsProps> =
     </div>
   );
 };
+

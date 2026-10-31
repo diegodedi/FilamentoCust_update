@@ -200,3 +200,4 @@ export const AddPrinterModal: React.FC<AddPrinterModalProps> = ({
     </div>
   );
 };
+

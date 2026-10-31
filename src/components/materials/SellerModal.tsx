@@ -94,3 +94,4 @@ export const SellerModal: React.FC<SellerModalProps> = ({
     </div>
   );
 };
+

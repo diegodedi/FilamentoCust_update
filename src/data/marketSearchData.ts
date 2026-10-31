@@ -254,3 +254,4 @@ export const MARKET_MOCK_DATA: Record<string, MarketProductItem[]> = {
     }
   ]
 };
+

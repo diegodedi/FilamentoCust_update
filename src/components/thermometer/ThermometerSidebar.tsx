@@ -230,3 +230,4 @@ export const ThermometerSidebar: React.FC<ThermometerSidebarProps> = ({
     </div>
   );
 };
+

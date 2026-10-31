@@ -115,3 +115,4 @@ export const PrintJobsHistoryTable: React.FC<PrintJobsHistoryTableProps> = ({
     </section>
   );
 };
+

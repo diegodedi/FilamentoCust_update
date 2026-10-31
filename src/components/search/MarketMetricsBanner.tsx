@@ -58,3 +58,4 @@ export const MarketMetricsBanner: React.FC<MarketMetricsBannerProps> = ({
     </div>
   );
 };
+

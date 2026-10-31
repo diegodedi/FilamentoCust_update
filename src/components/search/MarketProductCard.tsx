@@ -82,3 +82,4 @@ export const MarketProductCard: React.FC<MarketProductCardProps> = ({ item, rank
     </div>
   );
 };
+

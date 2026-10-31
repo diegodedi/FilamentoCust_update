@@ -156,3 +156,4 @@ export const MaterialBrandSelector: React.FC<MaterialBrandSelectorProps> = ({
     </div>
   );
 };
+
