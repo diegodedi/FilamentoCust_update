@@ -16,7 +16,7 @@ export interface MercadoLivreListing {
 /**
  * Retorna cuidados específicos de conservação com base no filamento
  */
-function getMaterialCareInstructions(materialType: string): string {
+export function getMaterialCareInstructions(materialType: string): string {
   const upper = (materialType || 'PLA').toUpperCase();
   if (upper.includes('PETG')) {
     return '• Resistente a impactos e temperaturas moderadas (até ~70°C).\n• Pode ser higienizado com água e sabão neutro.';

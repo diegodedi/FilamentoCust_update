@@ -14,6 +14,11 @@ export interface ProductPart {
   quantity: number; // Quantidade de peças necessárias dessa parte para compor 1 produto
 }
 
+export interface ProductPackagingItem {
+  supplyId: string;
+  quantity: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -43,6 +48,20 @@ export interface Product {
   profit: number; // calculated profit
   unitsPerPrint?: number;
   image?: string;
+  // Campos opcionais de E-commerce e Mercado Livre
+  wastePercentage?: number;
+  packagingItems?: ProductPackagingItem[];
+  packagingCost?: number;
+  packageDimensions?: string;
+  packageWeight?: number;
+  mlListingType?: 'CLASSICO' | 'PREMIUM';
+  mlTaxPercent?: number;
+  mlReputation?: 'VERDE' | 'AMARELA' | 'SEM_REPUTACAO';
+  mlShippingCost?: number;
+  mlNetProfit?: number;
+  leadTimeDays?: number;
+  isKit?: boolean;
+  kitMultiplier?: number;
 }
 
 export interface InventoryItem {
@@ -88,6 +107,7 @@ export interface Supply {
   packageQuantity: number; // Quantidade por pacote
   packagePrice: number; // Valor total do pacote (R$)
   unitPrice: number; // Valor unitário calculado (R$)
+  unitWeightGrams?: number; // Peso unitário em gramas (ex: peso da caixa vazia)
   image?: string;
   purchaseDate: string;
   notes?: string;

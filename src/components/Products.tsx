@@ -1,302 +1,48 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useDb } from '../context/DbContext';
-import { Trash2, X, Plus, Edit, Image as ImageIcon, Upload, RotateCcw } from 'lucide-react';
-import { ProductFilament, Product } from '../types';
+import { Plus, Image as ImageIcon } from 'lucide-react';
+import { Product } from '../types';
 import { MultipartProductModal } from './MultipartProductModal';
+import { SingleProductModal } from './products/SingleProductModal';
 import { ProductCard } from './ProductCard';
-import { MaterialTypeSelect } from './MaterialTypeSelect';
 import { MercadoLivreModal } from './MercadoLivreModal';
 
-const DEFAULT_IMAGES = [
-  "https://upload.wikimedia.org/wikipedia/commons/7/7b/3DBenchy_created_using_color_mixing_on_an_FDM_printer.jpg", // 3D Benchy
-  "https://upload.wikimedia.org/wikipedia/commons/b/be/3D_Printed_RFB_cell_frame_printed_on_Prusa_i3.jpg", // 3D Printed Part
-  "https://upload.wikimedia.org/wikipedia/commons/b/b6/Assembled_Prusa_Mendel.jpg", // 3D Printer
-  "https://upload.wikimedia.org/wikipedia/commons/4/46/Bobina_PLA.jpg"  // Filament Spool
-];
-
+/**
+ * Catálogo Principal de Produtos (Peças Únicas e Multipartes).
+ * Refatorado seguindo GOLDCODE v3.0 (modularização em SingleProductModal e MultipartProductModal).
+ */
 export const Products: React.FC = () => {
-  const { products, addProduct, updateProduct, deleteProduct, materials } = useDb();
+  const { products, deleteProduct } = useDb();
 
-  // Form states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMultipartModalOpen, setIsMultipartModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingMultipartProduct, setEditingMultipartProduct] = useState<Product | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
   const [mercadoLivreProduct, setMercadoLivreProduct] = useState<Product | null>(null);
   const [isMercadoLivreOpen, setIsMercadoLivreOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [dimensions, setDimensions] = useState('');
-  const [category, setCategory] = useState('Instrumento');
-  const [materialType, setMaterialType] = useState('PLA');
-  const [printHours, setPrintHours] = useState(5);
-  const [printMinutes, setPrintMinutes] = useState(0);
-  const [accessoryCost, setAccessoryCost] = useState(0);
-  const [image, setImage] = useState(DEFAULT_IMAGES[0]);
-
-  const [colorMode, setColorMode] = useState<'MONO' | 'MULTI'>('MONO');
-  const [monoMaterialId, setMonoMaterialId] = useState('');
-  const [monoWeight, setMonoWeight] = useState(30);
-  const [multiFilaments, setMultiFilaments] = useState<ProductFilament[]>([{ materialId: '', weight: 10 }]);
-  const [unitsPerPrint, setUnitsPerPrint] = useState(1);
-
-  // New Pricing States
-  const [b2cMargin, setB2cMargin] = useState(50);
-  const [b2cPriceOverride, setB2cPriceOverride] = useState<number | null>(null);
-  
-  const [b2bMargin, setB2bMargin] = useState(30);
-  const [b2bPriceOverride, setB2bPriceOverride] = useState<number | null>(null);
-  const [b2bMinQty, setB2bMinQty] = useState(10);
-  
-  const [marketplacePlatform, setMarketplacePlatform] = useState('Nenhum');
-  const [marketplacePriceOverride, setMarketplacePriceOverride] = useState<number | null>(null);
-  const [isCustomCategory, setIsCustomCategory] = useState(false);
-
-  const DEFAULT_CATEGORIES = [
-    "Instrumento",
-    "Decoração",
-    "Geek/Nerd",
-    "Utilidades",
-    "Brinquedos",
-    "Action Figures",
-    "Acessórios",
-    "Personalizados"
-  ];
-  
-  const allCategories = Array.from(new Set([
-    ...DEFAULT_CATEGORIES,
-    ...products.map(p => p.category).filter(Boolean)
-  ]));
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Calculations
-  const getTotalWeight = () => {
-    if (colorMode === 'MONO') return monoWeight;
-    return multiFilaments.reduce((acc, curr) => acc + curr.weight, 0);
-  };
-
-  const getFilamentCost = () => {
-    try {
-      if (colorMode === 'MONO') {
-        const mat = materials.find(m => String(m.id).trim() === String(monoMaterialId).trim());
-        if (!mat) return 0;
-        
-        // Handle comma replacements for all numbers before converting
-        const parseNum = (val: any) => {
-            if (val === undefined || val === null) return 0;
-            const strVal = String(val).replace(',', '.');
-            return parseFloat(strVal);
-        };
-        
-        let c = parseNum(mat.costPerGram);
-        if (isNaN(c) || c <= 0) {
-           const p = parseNum(mat.spoolPrice);
-           const w = parseNum(mat.initialWeight);
-           
-           if (!isNaN(p) && !isNaN(w) && w > 0 && p > 0) {
-               c = p / w;
-           } else {
-               c = 0.14;
-           }
-        }
-        
-        const mw = parseNum(monoWeight);
-        return (isNaN(mw) ? 0 : mw) * c;
-      }
-      
-      return multiFilaments.reduce((acc, curr) => {
-        const mat = materials.find(m => String(m.id).trim() === String(curr.materialId).trim());
-        if (!mat) return acc;
-        
-        const parseNum = (val: any) => {
-            if (val === undefined || val === null) return 0;
-            const strVal = String(val).replace(',', '.');
-            return parseFloat(strVal);
-        };
-        
-        let c = parseNum(mat.costPerGram);
-        if (isNaN(c) || c <= 0) {
-           const p = parseNum(mat.spoolPrice);
-           const w = parseNum(mat.initialWeight);
-           
-           if (!isNaN(p) && !isNaN(w) && w > 0 && p > 0) {
-               c = p / w;
-           } else {
-               c = 0.14;
-           }
-        }
-        
-        const cw = parseNum(curr.weight);
-        return acc + ((isNaN(cw) ? 0 : cw) * c);
-      }, 0);
-    } catch (e) {
-      console.error(e);
-      return 0;
-    }
-  };
-
-  const totalPrintTime = (Number(printHours) || 0) + ((Number(printMinutes) || 0) / 60);
-  const rawCost = getFilamentCost();
-  const safeCost = typeof rawCost === 'number' && !isNaN(rawCost) ? rawCost : 0;
-  const currentCost = safeCost + (totalPrintTime * 0.01) + (Number(accessoryCost) || 0);
-  
-  const suggestedB2C = currentCost * (1 + (b2cMargin / 100));
-  const currentB2C = b2cPriceOverride !== null ? b2cPriceOverride : suggestedB2C;
-
-  const suggestedB2B = currentCost * (1 + (b2bMargin / 100));
-  const currentB2B = b2bPriceOverride !== null ? b2bPriceOverride : suggestedB2B;
-
-  let calculatedMarketplacePrice = currentB2C;
-  if (marketplacePlatform === 'Mercado Livre Clássico (11.5% + R$6)') {
-    calculatedMarketplacePrice = (currentB2C + 6) / (1 - 0.115);
-  } else if (marketplacePlatform === 'Mercado Livre Premium (16.5% + R$6)') {
-    calculatedMarketplacePrice = (currentB2C + 6) / (1 - 0.165);
-  } else if (marketplacePlatform === 'Shopee (20%)') {
-    calculatedMarketplacePrice = currentB2C / (1 - 0.20);
-  } else if (marketplacePlatform === 'Amazon (15%)') {
-    calculatedMarketplacePrice = currentB2C / (1 - 0.15);
-  } else if (marketplacePlatform === 'AliExpress (10%)') {
-    calculatedMarketplacePrice = currentB2C / (1 - 0.10);
-  }
-  const finalMarketplacePrice = marketplacePriceOverride !== null ? marketplacePriceOverride : calculatedMarketplacePrice;
 
   const handleOpenAddModal = () => {
-    setEditingId(null);
-    setName('');
-    setDimensions('');
-    setCategory('Instrumento');
-    setMaterialType('PLA');
-    setPrintHours(5);
-    setPrintMinutes(0);
-    setAccessoryCost(0);
-    setImage(DEFAULT_IMAGES[0]);
-    setColorMode('MONO');
-    setMonoMaterialId('');
-    setMonoWeight(30);
-    setMultiFilaments([{ materialId: '', weight: 10 }]);
-    setUnitsPerPrint(1);
-    
-    setB2cMargin(50);
-    setB2cPriceOverride(null);
-    setB2bMargin(30);
-    setB2bPriceOverride(null);
-    setB2bMinQty(10);
-    setMarketplacePlatform('Nenhum');
-    setMarketplacePriceOverride(null);
-    setIsCustomCategory(false);
-    
+    setEditingProduct(null);
     setIsModalOpen(true);
+  };
+
+  const handleOpenAddMultipartModal = () => {
+    setEditingProduct(null);
+    setIsMultipartModalOpen(true);
   };
 
   const handleEdit = (p: Product) => {
+    setEditingProduct(p);
     if (p.isMultipart) {
-      setEditingMultipartProduct(p);
       setIsMultipartModalOpen(true);
-      return;
-    }
-    
-    setEditingId(p.id);
-    setName(p.name);
-    setDimensions(p.dimensions || '');
-    setCategory(p.category);
-    setMaterialType(p.materialType || 'PLA');
-    setPrintHours(Math.floor(p.printTime));
-    setPrintMinutes(Math.round((p.printTime % 1) * 60));
-    setAccessoryCost(p.accessoryCost || 0);
-    setUnitsPerPrint(p.unitsPerPrint || 1);
-    setImage(p.image || DEFAULT_IMAGES[0]);
-
-    if (p.colorMode === 'MULTI' && p.filaments && p.filaments.length > 0) {
-      setColorMode('MULTI');
-      setMultiFilaments(p.filaments);
     } else {
-      setColorMode('MONO');
-      setMonoMaterialId(p.filaments?.[0]?.materialId || p.materialId);
-      setMonoWeight(p.filaments?.[0]?.weight || p.weight);
-    }
-    
-    setB2cMargin(p.b2cMargin ?? 50);
-    setB2cPriceOverride(p.b2cPriceOverride ?? null);
-    setB2bMargin(p.b2bMargin ?? 30);
-    setB2bPriceOverride(p.b2bPriceOverride ?? null);
-    setB2bMinQty(p.b2bMinQty ?? 10);
-    setMarketplacePlatform(p.marketplacePlatform ?? 'Nenhum');
-    setMarketplacePriceOverride(p.marketplacePriceOverride ?? null);
-    setIsCustomCategory(false);
-    
-    setIsModalOpen(true);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setIsModalOpen(false);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setIsModalOpen(true);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-
-    let finalFilaments: ProductFilament[] = [];
-    if (colorMode === 'MONO') {
-      if (!monoMaterialId) {
-        alert("Selecione um filamento.");
-        return;
-      }
-      finalFilaments = [{ materialId: monoMaterialId, weight: monoWeight }];
-    } else {
-      if (multiFilaments.some(f => !f.materialId || f.weight <= 0)) {
-        alert("Preencha todos os filamentos corretamente.");
-        return;
-      }
-      finalFilaments = multiFilaments;
-    }
-
-    const data = {
-      name,
-      dimensions: dimensions.trim() || undefined,
-      category,
-      printTime: totalPrintTime,
-      weight: getTotalWeight(),
-      accessoryCost,
-      unitsPerPrint,
-      colorMode,
-      filaments: finalFilaments,
-      costPrice: parseFloat(currentCost.toFixed(2)),
-      b2bMargin,
-      b2bMinQty,
-      b2bPrice: parseFloat(currentB2B.toFixed(2)),
-      b2bPriceOverride: b2bPriceOverride !== null ? b2bPriceOverride : null,
-      sellPrice: parseFloat(currentB2C.toFixed(2)), // Maps to Suggested Price
-      b2cMargin,
-      b2cPrice: parseFloat(currentB2C.toFixed(2)),
-      b2cPriceOverride: b2cPriceOverride !== null ? b2cPriceOverride : null,
-      marketplacePlatform,
-      marketplacePrice: parseFloat(finalMarketplacePrice.toFixed(2)),
-      marketplacePriceOverride: marketplacePriceOverride !== null ? marketplacePriceOverride : null,
-      profit: parseFloat((currentB2C - currentCost).toFixed(2)),
-      materialId: finalFilaments[0]?.materialId || '', // fallback
-      materialType,
-      image
-    };
-
-    if (editingId) {
-      updateProduct(editingId, { ...data, id: editingId });
-    } else {
-      addProduct(data);
-    }
-
-    cancelEdit();
+  const handleOpenMercadoLivre = (product: Product) => {
+    setMercadoLivreProduct(product);
+    setIsMercadoLivreOpen(true);
   };
 
   return (
@@ -314,10 +60,7 @@ export const Products: React.FC = () => {
             <Plus className="w-4 h-4 stroke-[2.5]" /> Novo Produto
           </button>
           <button
-            onClick={() => {
-              setEditingMultipartProduct(null);
-              setIsMultipartModalOpen(true);
-            }}
+            onClick={handleOpenAddMultipartModal}
             className="bg-[#222632] hover:bg-[#2B303E] text-white border border-[#383F50] font-bold py-2.5 px-5 rounded-xl text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Novo Produto Multpartes
@@ -332,10 +75,7 @@ export const Products: React.FC = () => {
             product={p}
             onEdit={handleEdit}
             onDelete={deleteProduct}
-            onOpenMercadoLivre={(prod) => {
-              setMercadoLivreProduct(prod);
-              setIsMercadoLivreOpen(true);
-            }}
+            onOpenMercadoLivre={handleOpenMercadoLivre}
           />
         ))}
         {products.length === 0 && (
@@ -347,506 +87,24 @@ export const Products: React.FC = () => {
         )}
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1C1F24] rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
-            <div className="p-6 border-b border-[#2B2F36] flex justify-between items-center bg-[#121418] sticky top-0 z-10">
-              <h2 className="font-headline-md text-white m-0">
-                {editingId ? 'Editar Produto' : 'Cadastrar Produto'}
-              </h2>
-              <button onClick={cancelEdit} className="p-1 text-slate-400 hover:text-slate-300 rounded-full transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      <SingleProductModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProduct(null);
+        }}
+        editingProduct={editingProduct}
+        onOpenMercadoLivre={handleOpenMercadoLivre}
+      />
 
-            <div className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-8">
-                
-                {/* Imagem do Produto */}
-                <div>
-                  <h3 className="text-sm font-bold text-slate-200 uppercase mb-4">Imagem do Produto</h3>
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="w-full md:w-48 h-48 bg-[#2B2F36] rounded-xl border-2 border-dashed border-[#2B2F36] flex items-center justify-center overflow-hidden relative group">
-                      {image ? (
-                        <>
-                          <img src={image} alt="Preview" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button type="button" onClick={() => fileInputRef.current?.click()} className="text-white text-xs font-bold bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-1">
-                              <Upload className="w-3 h-3" /> Trocar
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <button type="button" onClick={() => fileInputRef.current?.click()} className="text-slate-400 flex flex-col items-center gap-2 hover:text-[#0084FF] transition-colors">
-                          <Upload className="w-6 h-6" />
-                          <span className="text-xs font-medium">Fazer Upload</span>
-                        </button>
-                      )}
-                      <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <label className="text-xs font-bold text-slate-400 uppercase">Ou escolha uma imagem padrão</label>
-                      <div className="flex gap-3 overflow-x-auto pb-2">
-                        {DEFAULT_IMAGES.map((img, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => setImage(img)}
-                            className={`w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${image === img ? 'border-[#2563EB] shadow-md scale-105' : 'border-transparent hover:border-[#3A3F47]'}`}
-                          >
-                            <img src={img} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt={`Preset ${i+1}`} />
-                          </button>
-                        ))}
-                      </div>
-                      <p className="text-[11px] text-slate-400 mt-2">Dica: Adicione uma foto real da peça impressa para deixar seu catálogo mais profissional para envio a clientes no futuro.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-[#2B2F36]"></div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="space-y-2 lg:col-span-2">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Nome *</label>
-                    <input 
-                      type="text" 
-                      placeholder="ex: Tubo de baixo"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2 lg:col-span-2">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block flex justify-between items-center">
-                      <span>Dimensões do Produto</span>
-                      <span className="text-[10px] text-slate-500 font-normal lowercase">ex: 15 x 10 x 8 cm</span>
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="Ex: 15 x 10 x 8 cm (A x L x P)"
-                      value={dimensions}
-                      onChange={e => setDimensions(e.target.value)}
-                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Categoria</label>
-                    {isCustomCategory ? (
-                      <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          placeholder="Digite a nova categoria..."
-                          value={category}
-                          onChange={e => setCategory(e.target.value)}
-                          className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                          required
-                          autoFocus
-                        />
-                        <button 
-                          type="button"
-                          onClick={() => {
-                            setIsCustomCategory(false);
-                            setCategory(DEFAULT_CATEGORIES[0]);
-                          }}
-                          className="px-3 bg-[#2B2F36] hover:bg-[#3f444e] rounded-lg text-slate-300 text-sm font-bold transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <select
-                        value={category}
-                        onChange={e => {
-                          if (e.target.value === 'NEW') {
-                            setIsCustomCategory(true);
-                            setCategory('');
-                          } else {
-                            setCategory(e.target.value);
-                          }
-                        }}
-                        className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                      >
-                        {allCategories.map(cat => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                        <option value="NEW">+ Nova Categoria...</option>
-                      </select>
-                    )}
-                  </div>
-
-                  <MaterialTypeSelect
-                    value={materialType}
-                    onChange={setMaterialType}
-                  />
-
-                  <div className="space-y-2">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Acessório (R$)</label>
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      min="0"
-                      value={accessoryCost}
-                      onChange={e => setAccessoryCost(Number(e.target.value))}
-                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2 lg:col-span-1">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Unidades por Impressão</label>
-                    <input 
-                      type="number" 
-                      min="1"
-                      step="1"
-                      value={unitsPerPrint}
-                      onChange={e => setUnitsPerPrint(Number(e.target.value))}
-                      className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2 lg:col-span-1">
-                    <label className="font-label-md text-slate-400 text-xs uppercase block">Tempo de Impressão</label>
-                    <div className="flex gap-2">
-                      <div className="relative w-full">
-                        <input 
-                          type="number" 
-                          min="0"
-                          value={printHours}
-                          onChange={e => setPrintHours(Number(e.target.value.replace(",", ".")))}
-                          className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 pr-8 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                        />
-                        <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">H</span>
-                      </div>
-                      <div className="relative w-full">
-                        <input 
-                          type="number" 
-                          min="0"
-                          max="59"
-                          value={printMinutes}
-                          onChange={e => setPrintMinutes(Number(e.target.value.replace(",", ".")))}
-                          className="w-full bg-[#121418] border border-[#2B2F36] rounded-lg px-4 py-2.5 pr-8 text-sm text-slate-200 outline-none focus:border-[#0084FF] focus:ring-1 focus:ring-[#0084FF]"
-                        />
-                        <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">M</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-5 bg-[#121418] border border-[#2B2F36] rounded-xl space-y-5">
-                  <div className="flex gap-4 items-center mb-2">
-                    <label className="font-label-md text-slate-200 text-sm font-bold uppercase">Material</label>
-                    <select
-                      value={colorMode}
-                      onChange={e => setColorMode(e.target.value as 'MONO' | 'MULTI')}
-                      className="bg-[#1C1F24] border border-[#2B2F36] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0084FF]"
-                    >
-                      <option value="MONO">Mono Cor</option>
-                      <option value="MULTI">Multicolor</option>
-                    </select>
-                  </div>
-
-                  {colorMode === 'MONO' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-xs text-slate-400 uppercase">Filamento</label>
-                        <select
-                          required
-                          value={monoMaterialId || ""}
-                          onChange={e => setMonoMaterialId(e.target.value)}
-                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#0084FF]"
-                        >
-                          <option value="" disabled>Selecione um filamento</option>
-                          {materials.map(m => (
-                            <option key={m.id} value={m.id}>{m.brand} - {m.name} ({m.color})</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs text-slate-400 uppercase">Peso Usado (G)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={monoWeight}
-                          onChange={e => setMonoWeight(Number(e.target.value.replace(",", ".")))}
-                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#0084FF]"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {multiFilaments.map((f, index) => (
-                        <div key={index} className="flex gap-4 items-end">
-                          <div className="flex-1 space-y-2">
-                            <label className="text-xs text-slate-400 uppercase">Cor {index + 1}</label>
-                            <select
-                              required
-                              value={f.materialId}
-                              onChange={e => {
-                                const newFils = [...multiFilaments];
-                                newFils[index].materialId = e.target.value;
-                                setMultiFilaments(newFils);
-                              }}
-                              className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#0084FF]"
-                            >
-                              <option value="" disabled>Selecione um filamento</option>
-                              {materials.map(m => (
-                                <option key={m.id} value={m.id}>{m.brand} - {m.name} ({m.color})</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="w-32 space-y-2">
-                            <label className="text-xs text-slate-400 uppercase">Peso (G)</label>
-                            <input
-                              type="number"
-                              min="1"
-                              required
-                              value={f.weight}
-                              onChange={e => {
-                                const newFils = [...multiFilaments];
-                                newFils[index].weight = Number(e.target.value.replace(",", "."));
-                                setMultiFilaments(newFils);
-                              }}
-                              className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#0084FF]"
-                            />
-                          </div>
-                          {multiFilaments.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newFils = [...multiFilaments];
-                                newFils.splice(index, 1);
-                                setMultiFilaments(newFils);
-                              }}
-                              className="mb-1 p-2.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => setMultiFilaments([...multiFilaments, { materialId: '', weight: 10 }])}
-                        className="text-xs font-bold text-[#0084FF] hover:text-[#1d4ed8] flex items-center gap-1 mt-2"
-                      >
-                        <Plus className="w-3 h-3" /> ADICIONAR COR
-                      </button>
-                    </div>
-                  )}
-                  
-                  <div className="pt-4 border-t border-[#2B2F36] flex justify-between items-center text-sm">
-                    <span className="text-slate-400">Peso Total: <strong className="text-white">{getTotalWeight()}g</strong></span>
-                    <span className="text-slate-400">Custo Material: <strong className="text-white">R$ {safeCost.toFixed(2)}</strong></span>
-                  </div>
-                </div>
-
-                <div className="border border-[#2563EB]/20 bg-[#0084FF]/5 p-5 rounded-xl space-y-6">
-                  <h3 className="text-sm font-bold text-[#0084FF] uppercase tracking-wider">Precificação do Produto</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* B2C Pricing */}
-                    <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4 space-y-4">
-                      <h4 className="text-xs font-bold text-[#22C55E] uppercase mb-2">B2C - Consumidor Final</h4>
-                      <div>
-                        <label className="text-xs text-slate-400 block mb-1">Margem de Lucro (%)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={b2cMargin}
-                          onChange={e => {
-                            setB2cMargin(Number(e.target.value));
-                            setB2cPriceOverride(null); // Reset override on margin change
-                          }}
-                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#22C55E] outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs text-slate-400 block mb-1">Preço B2C (Editável)</label>
-                        <div className="relative w-full">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={b2cPriceOverride !== null ? b2cPriceOverride : parseFloat(suggestedB2C.toFixed(2))}
-                            onChange={e => setB2cPriceOverride(e.target.value === '' ? null : Number(e.target.value))}
-                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-[#22C55E] font-bold focus:border-[#22C55E] outline-none pr-10"
-                          />
-                          {b2cPriceOverride !== null && (
-                            <button
-                              type="button"
-                              onClick={() => setB2cPriceOverride(null)}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#22C55E] transition-colors"
-                              title="Restaurar padrão sugerido"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* B2B Pricing */}
-                    <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4 space-y-4">
-                      <h4 className="text-xs font-bold text-[#0084FF] uppercase mb-2">B2B - Para Empresas</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-xs text-slate-400 block mb-1">Margem (%)</label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={b2bMargin}
-                            onChange={e => {
-                              setB2bMargin(Number(e.target.value));
-                              setB2bPriceOverride(null);
-                            }}
-                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#0084FF] outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-slate-400 block mb-1">Qtd Mínima</label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={b2bMinQty}
-                            onChange={e => setB2bMinQty(Number(e.target.value))}
-                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#0084FF] outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-xs text-slate-400 block mb-1">Preço B2B (Editável)</label>
-                        <div className="relative w-full">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={b2bPriceOverride !== null ? b2bPriceOverride : parseFloat(suggestedB2B.toFixed(2))}
-                            onChange={e => setB2bPriceOverride(e.target.value === '' ? null : Number(e.target.value))}
-                            className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-[#0084FF] font-bold focus:border-[#0084FF] outline-none pr-10"
-                          />
-                          {b2bPriceOverride !== null && (
-                            <button
-                              type="button"
-                              onClick={() => setB2bPriceOverride(null)}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#0084FF] transition-colors"
-                              title="Restaurar padrão sugerido"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Marketplaces */}
-                  <div className="bg-[#121418] border border-[#2B2F36] rounded-lg p-4">
-                    <h4 className="text-xs font-bold text-[#F59E0B] uppercase mb-4">Markup Inverso para Marketplaces</h4>
-                    <p className="text-[10px] text-slate-400 mb-3">Selecione uma plataforma para saber por quanto você deve anunciar o produto nela, para que após as taxas, você ainda receba exatamente o valor definido no B2C acima (R$ {currentB2C.toFixed(2)}).</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                      <div>
-                        <label className="text-xs text-slate-400 block mb-1">Plataforma</label>
-                        <select
-                          value={marketplacePlatform}
-                          onChange={e => {
-                            setMarketplacePlatform(e.target.value);
-                            setMarketplacePriceOverride(null);
-                          }}
-                          className="w-full bg-[#1C1F24] border border-[#2B2F36] rounded px-3 py-2 text-sm text-white focus:border-[#F59E0B] outline-none"
-                        >
-                          <option value="Nenhum">Nenhum</option>
-                          <option value="Mercado Livre Clássico (11.5% + R$6)">Mercado Livre Clássico (11.5% + R$6)</option>
-                          <option value="Mercado Livre Premium (16.5% + R$6)">Mercado Livre Premium (16.5% + R$6)</option>
-                          <option value="Shopee (20%)">Shopee (20%)</option>
-                          <option value="Amazon (15%)">Amazon (15%)</option>
-                          <option value="AliExpress (10%)">AliExpress (10%)</option>
-                        </select>
-                      </div>
-                      {marketplacePlatform !== 'Nenhum' && (
-                        <div>
-                          <label className="text-xs text-slate-400 block mb-1">Preço Plataforma (Editável)</label>
-                          <div className="relative w-full">
-                            <input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={marketplacePriceOverride !== null ? marketplacePriceOverride : parseFloat(calculatedMarketplacePrice.toFixed(2))}
-                              onChange={e => setMarketplacePriceOverride(e.target.value === '' ? null : Number(e.target.value))}
-                              className="w-full bg-[#1C1F24] border border-[#F59E0B]/50 rounded px-3 py-2 text-lg text-[#F59E0B] font-bold focus:border-[#F59E0B] outline-none pr-10"
-                            />
-                            {marketplacePriceOverride !== null && (
-                              <button
-                                type="button"
-                                onClick={() => setMarketplacePriceOverride(null)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#F59E0B] transition-colors"
-                                title="Restaurar padrão sugerido"
-                              >
-                                <RotateCcw className="w-5 h-5" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono mt-4 pt-3 border-t border-[#2563EB]/10">
-                    <span>Custo Total de Produção: <strong className="text-white">R$ {currentCost.toFixed(2)}</strong></span>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 justify-end items-center pt-4 border-t border-[#2B2F36]">
-                  {editingId && (
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        const prod = products.find(p => p.id === editingId);
-                        if (prod) {
-                          setMercadoLivreProduct(prod);
-                          setIsMercadoLivreOpen(true);
-                        }
-                      }}
-                      className="bg-[#FFE600]/15 hover:bg-[#FFE600]/25 text-[#FFE600] border border-[#FFE600]/30 font-bold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2 mr-auto"
-                      title="Gerar anúncio para o Mercado Livre"
-                    >
-                      <span className="w-4 h-4 rounded bg-[#FFE600] text-slate-950 flex items-center justify-center font-black text-[9px]">ML</span>
-                      <span>Anúncio Mercado Livre</span>
-                    </button>
-                  )}
-                  <button 
-                    type="button"
-                    onClick={cancelEdit}
-                    className="bg-[#1C1F24] border border-[#2B2F36] text-slate-300 hover:bg-[#121418] font-bold py-2.5 px-6 rounded-lg text-sm transition-colors shadow-sm"
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    type="submit"
-                    className="bg-[#0084FF] hover:bg-[#0084FF]/90 text-white font-bold py-2.5 px-8 rounded-lg text-sm transition-colors shadow-sm"
-                  >
-                    {editingId ? 'Salvar Alterações' : 'Concluir Cadastro'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <MultipartProductModal 
-        isOpen={isMultipartModalOpen} 
+      <MultipartProductModal
+        isOpen={isMultipartModalOpen}
         onClose={() => {
           setIsMultipartModalOpen(false);
-          setEditingMultipartProduct(null);
+          setEditingProduct(null);
         }}
-        editingProduct={editingMultipartProduct}
-        onOpenMercadoLivre={(prod) => {
-          setMercadoLivreProduct(prod);
-          setIsMercadoLivreOpen(true);
-        }}
+        editingProduct={editingProduct}
+        onOpenMercadoLivre={handleOpenMercadoLivre}
       />
 
       <MercadoLivreModal

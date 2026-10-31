@@ -1,4 +1,5 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage, dialog, shell } from 'electron';
+import electron from 'electron';
+const { app, BrowserWindow, Tray, Menu, nativeImage, dialog, shell } = electron;
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';

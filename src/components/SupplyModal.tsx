@@ -28,6 +28,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
   const [link, setLink] = useState('');
   const [packageQuantity, setPackageQuantity] = useState(1);
   const [packagePrice, setPackagePrice] = useState(0);
+  const [unitWeightGrams, setUnitWeightGrams] = useState(0);
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
   const [image, setImage] = useState('');
@@ -42,6 +43,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
       setLink(initialSupply.link || '');
       setPackageQuantity(initialSupply.packageQuantity);
       setPackagePrice(initialSupply.packagePrice);
+      setUnitWeightGrams(initialSupply.unitWeightGrams || 0);
       setPurchaseDate(initialSupply.purchaseDate || new Date().toISOString().split('T')[0]);
       setNotes(initialSupply.notes || '');
       setImage(initialSupply.image || '');
@@ -52,6 +54,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
       setLink('');
       setPackageQuantity(1);
       setPackagePrice(0);
+      setUnitWeightGrams(0);
       setPurchaseDate(new Date().toISOString().split('T')[0]);
       setNotes('');
       setImage(SUPPLY_IMAGES['Caixa de papelão']);
@@ -83,6 +86,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
       packageQuantity,
       packagePrice,
       unitPrice,
+      unitWeightGrams: unitWeightGrams > 0 ? unitWeightGrams : undefined,
       purchaseDate,
       image,
       notes
@@ -199,7 +203,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className={`grid ${type === 'Caixa de papelão' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2'} gap-4`}>
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Custo do Pacote (R$) *</label>
                 <input 
@@ -214,7 +218,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">
-                  {type === 'Plástico bolha' ? 'Metros no Rolo *' : 'Qtde no Pacote (un/m) *'}
+                  {type === 'Plástico bolha' ? 'Metros no Rolo *' : 'Qtde no Pacote (un) *'}
                 </label>
                 <input 
                   type="number" 
@@ -225,6 +229,21 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({ isOpen, onClose, onSav
                   required
                 />
               </div>
+              {type === 'Caixa de papelão' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">
+                    Peso Unit. da Caixa (g)
+                  </label>
+                  <input 
+                    type="number" 
+                    min="0"
+                    placeholder="Ex: 85g"
+                    value={unitWeightGrams || ''} 
+                    onChange={(e) => setUnitWeightGrams(Math.max(0, parseFloat(e.target.value) || 0))}
+                    className="w-full bg-[#121418] border border-[#2B2F36] text-white rounded-lg px-4 py-3 focus:outline-none focus:border-[#0084FF] text-sm font-mono"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-[#0084FF]/10 rounded-lg border border-[#0084FF]/30 flex justify-between items-center">

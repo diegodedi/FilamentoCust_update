@@ -34,7 +34,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Badges: Categoria e Tipo de Material */}
+        {/* Badges: Categoria, Tipo de Material e Kit */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center max-w-[75%]">
           <span className="px-2.5 py-1 bg-[#11141A]/90 backdrop-blur-md text-slate-200 rounded-full text-[10px] font-bold shadow-sm border border-[#2B303E] truncate">
             {p.category}
@@ -42,6 +42,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <span className="px-2.5 py-1 bg-[#FFB800]/20 backdrop-blur-md text-[#FFB800] rounded-full text-[10px] font-bold shadow-sm border border-[#FFB800]/40 truncate">
             {materialType}
           </span>
+          {p.isKit && (
+            <span className="px-2.5 py-1 bg-emerald-500/20 backdrop-blur-md text-emerald-300 rounded-full text-[10px] font-extrabold border border-emerald-500/40">
+              KIT {p.kitMultiplier || 2}x
+            </span>
+          )}
         </div>
 
         {/* Floating Actions on Hover */}
@@ -118,13 +123,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="font-mono font-bold text-[#FFB800]">R$ {(p.b2bPrice || (p.costPrice * 4)).toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-200 font-medium">Preço Sugerido (B2C):</span>
-            <span className="font-mono font-bold text-[#10B981]">R$ {(p.b2cPrice || p.sellPrice).toFixed(2)}</span>
+            <span className="text-slate-200 font-medium">Preço de Venda (B2C):</span>
+            <div className="text-right">
+              <span className="font-mono font-bold text-[#10B981]">R$ {(p.b2cPrice || p.sellPrice).toFixed(2)}</span>
+              {p.profit !== undefined && p.profit > 0 && (
+                <span className="text-[10px] text-emerald-400 font-medium block">
+                  Líq: R$ {p.profit.toFixed(2)}
+                </span>
+              )}
+            </div>
           </div>
-          {p.marketplacePlatform && p.marketplacePlatform !== 'Nenhum' && (
+          {p.marketplacePlatform && p.marketplacePlatform !== 'Nenhum' && p.marketplacePrice && p.marketplacePrice !== p.b2cPrice && (
             <div className="flex justify-between items-center text-xs pt-1 border-t border-[#2B303E]">
-              <span className="text-slate-400">Plataforma ({p.marketplacePlatform.split(' ')[0]}):</span>
-              <span className="font-mono font-bold text-[#FF5E3A]">R$ {(p.marketplacePrice || 0).toFixed(2)}</span>
+              <span className="text-slate-400">
+                Plataforma ({p.marketplacePlatform.split(' ')[0]}):
+              </span>
+              <span className="font-mono font-bold text-[#FF5E3A]">R$ {p.marketplacePrice.toFixed(2)}</span>
             </div>
           )}
 
@@ -133,12 +147,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               onClick={() => onOpenMercadoLivre(p)}
               className="mt-3 w-full py-2.5 px-3 bg-[#FFB800]/15 hover:bg-[#FFB800] text-[#FFB800] hover:text-[#0F1115] border border-[#FFB800]/30 hover:border-transparent rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all duration-200 shadow-sm cursor-pointer"
-              title="Gerar anúncio e copiar descrição para o Mercado Livre"
+              title="Abrir Central Mercado Livre (Anúncio, Taxas R$79, Embalagem, Kits e Cartão Pós-Venda)"
             >
               <span className="w-4 h-4 rounded bg-[#FFB800] text-[#0F1115] flex items-center justify-center font-black text-[9px]">
                 ML
               </span>
-              <span>Copiar Anúncio ML</span>
+              <span>Central Mercado Livre</span>
             </button>
           )}
         </div>

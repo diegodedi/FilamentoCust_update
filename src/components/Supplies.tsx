@@ -169,8 +169,12 @@ export const Supplies: React.FC = () => {
                               </span>
                             </div>
                             <div>
-                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Qtd</span>
-                              <span className="font-mono text-slate-300 text-xs">{supply.packageQuantity} un/m</span>
+                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
+                                {supply.unitWeightGrams ? 'Peso / Qtd' : 'Qtd'}
+                              </span>
+                              <span className="font-mono text-slate-300 text-xs">
+                                {supply.unitWeightGrams ? `${supply.unitWeightGrams}g • ` : ''}{supply.packageQuantity} un/m
+                              </span>
                             </div>
                           </div>
 

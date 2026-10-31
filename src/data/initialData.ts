@@ -2,6 +2,18 @@ import { Product, InventoryItem, Material, Customer, Sale, FinancialLog, CostCon
 
 export const initialSupplies: Supply[] = [
   {
+    id: "sup-01b",
+    type: "Caixa de papelão",
+    name: "Caixa Correios nº 1 (16x11x6 cm)",
+    provider: "Caixas Online",
+    link: "https://www.caixasonline.com.br",
+    packageQuantity: 50,
+    packagePrice: 55.00,
+    unitPrice: 1.10,
+    purchaseDate: "2026-08-10",
+    image: "https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop"
+  },
+  {
     id: "sup-01",
     type: "Caixa de papelão",
     name: "Caixa Padrão 15x15x15",
@@ -11,6 +23,18 @@ export const initialSupplies: Supply[] = [
     packagePrice: 75.00,
     unitPrice: 1.50,
     purchaseDate: "2026-08-15",
+    image: "https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop"
+  },
+  {
+    id: "sup-01c",
+    type: "Caixa de papelão",
+    name: "Caixa Média 20x20x15 cm",
+    provider: "Klabin",
+    link: "https://www.klabin.com.br",
+    packageQuantity: 25,
+    packagePrice: 62.50,
+    unitPrice: 2.50,
+    purchaseDate: "2026-08-12",
     image: "https://images.unsplash.com/photo-1580674684081-776733156bef?q=80&w=500&auto=format&fit=crop"
   },
   {
