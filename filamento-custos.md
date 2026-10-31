@@ -17,21 +17,27 @@ src/
     inventory/          → Inventory subcomponents (InventoryMetrics, InventoryTable, InventoryExtras)
     products/           → Product modal subcomponents (SingleProductModal, SingleProductFieldsSection, SingleProductMaterialSelector, MultipartPartsEditor, ProductPricingController, AutoPackagingBoxSelector, MlChargesBreakdown, ProductPackagingAndMlSection, ProductFinalPricingCards)
     mercadolivre/       → ML Hub subcomponents (MlListingTab, MlPricingAndSuppliesTab, MlPackagingSelector, MlKitsAndLeadTimeTab, MlShippingAndFlyerTab)
+    materials/          → Materials & Spools subcomponents (MaterialCard, MaterialModal, MaterialBrandSelector, MaterialPricingWeightSection, MaterialSellerSidebar, SellerModal)
+    thermometer/        → Thermometer subcomponents (ThermometerSidebar, ThermometerModelCard, ThermometerBottomMetrics)
+    production/         → Production subcomponents (PrinterCard, PrintJobsHistoryTable, AddPrinterModal)
+    search/             → Market Research subcomponents (MarketProductCard, MarketMetricsBanner)
+    layout/             → Shell navigation components (Sidebar, AppNavbar)
+    help/               → Help Center & Versioning (HelpCenterModal, HelpTopicViewer, ChangelogViewer, WhatsNewModal)
     MercadoLivreModal.tsx → Central Mercado Livre & E-Commerce 3D (4 tabs hub)
     ProductCard.tsx     → Modernized card with amber badge, Kit badge, specs, pricing and ML Hub button
     Customers.tsx       → CRM customer contacts with loyalty badges (Ouro, Prata, Bronze)
     Supplies.tsx        → Supplies & packaging inventory cards
     Products.tsx        → Product catalog with responsive grid
-    Materials.tsx       → Spool and filament management
-    Production.tsx      → 3D Printer queue and live status
-    Thermometer.tsx     → Thermal and pricing simulation view
-    ProductSearch.tsx   → Market research and product price checker
+    Materials.tsx       → Spool and filament management (orchestrator)
+    Production.tsx      → 3D Printer queue and live status (orchestrator)
+    Thermometer.tsx     → Thermal and pricing simulation view (orchestrator)
+    ProductSearch.tsx   → Market research and product price checker (orchestrator)
     Settings.tsx        → System settings and Google Sheets sync
   context/              → DbContext (data persistence & sync), PrinterContext
-  data/                 → Initial/demo data (initialData.ts)
+  data/                 → Initial/demo data (initialData.ts), documentationData.ts, changelogData.ts, marketSearchData.ts
   services/             → Printer integration and communication services
   utils/                → Google Sheets sync, GAS code generator, ML template & ML pricing/shipping calculators
-  types.ts              → TypeScript domain interfaces and types
+  types/                → TypeScript domain interfaces and types (help.ts, types.ts)
 printer-bridge/         → Local node service for 3D printer communication
 
 ## Routes / Views
@@ -52,14 +58,18 @@ Configurações           → System settings and Google Sheets sync
 ## Key Files
 src/context/DbContext.tsx         → Central data context, CRUD methods and LocalStorage/Sheets sync
 src/index.css                     → Design tokens, brand colors, custom dark scrollbar & theme utilities
-src/App.tsx                       → Responsive layout, mobile drawer, top navbar, wide container
-src/components/ProductCard.tsx    → Product card component with material badge, specs, pricing and ML Hub button
-src/components/MercadoLivreModal.tsx → Central Mercado Livre (Anúncio, Regra R$79, Embalagem, Kits e Pós-Venda)
+src/App.tsx                       → Modular application shell with version check and modals
+src/components/layout/Sidebar.tsx → Responsive navigation drawer with Help quick access
+src/components/layout/AppNavbar.tsx → Sticky top navbar with status indicator and Help button
+src/components/help/HelpCenterModal.tsx → Interactive documentation and knowledge base modal
+src/components/help/WhatsNewModal.tsx → Automatic update announcement modal (What's New)
+src/data/documentationData.ts     → Comprehensive 3D printing guides and practical calculation examples
+src/data/changelogData.ts         → Structured release history and version notes (v1.0.32)
 src/utils/mercadoLivrePricing.ts  → Pure calculation engine for ML fees, R$79 shipping, kits and lead time
 printer-bridge/electron.js        → Electron main process, window management and on-demand auto-updater flow
 package.json                      → Dependencies and Electron build scripts
 
 ## Storage Keys (LocalStorage)
-forge_products · forge_inventory · forge_materials · forge_customers · forge_sales · forge_financial · forge_config · 3derp_printers · 3derp_printJobs
+forge_products · forge_inventory · forge_materials · forge_customers · forge_sales · forge_financial · forge_config · forge_last_seen_version · 3derp_printers · 3derp_printJobs · @filamento/thermometer
 
-## Last updated: 2026-10-31 (v1.0.31 - Central Mercado Livre, Precificação B2C/B2B com Margem Líquida Real, Peso Embalado Inteligente e Refatoração Modular GOLDCODE v3.0)
+## Last updated: 2026-10-31 (v1.0.32 - Refatoração Modular Completa, Central de Ajuda & Manual Interativo, Controle de Versões e Pop-up WhatsNew)

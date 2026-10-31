@@ -271,3 +271,4 @@ export const SingleProductModal: React.FC<SingleProductModalProps> = ({
     </div>
   );
 };
+
